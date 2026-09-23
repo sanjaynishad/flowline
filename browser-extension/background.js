@@ -59,7 +59,14 @@ function send(payload) {
 
 async function reportActiveTab() {
   try {
-    const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true })
+    // The browser may not hold OS focus; only report a tab when its window actually does.
+    const win = await chrome.windows.getLastFocused()
+    if (!win || !win.focused) {
+      send({ focused: false })
+      return
+    }
+
+    const [tab] = await chrome.tabs.query({ active: true, windowId: win.id })
     if (!tab || !tab.url || tab.url.startsWith('chrome://') || tab.url.startsWith('edge://')) {
       send({ focused: true, url: null, title: tab ? tab.title : null })
       return
