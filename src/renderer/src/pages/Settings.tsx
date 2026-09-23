@@ -5,13 +5,18 @@ import { Icon } from '../components/Icon'
 
 function Toggle({
   checked,
-  onChange
+  onChange,
+  label
 }: {
   checked: boolean
   onChange: (v: boolean) => void
+  label: string
 }): JSX.Element {
   return (
     <button
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
       onClick={() => onChange(!checked)}
       className={`relative w-11 h-6 rounded-full transition-colors ${
         checked ? 'bg-primary-container' : 'bg-surface-container-highest'
@@ -147,12 +152,17 @@ export function Settings(): JSX.Element {
         </div>
         <Row title="Notifications" desc="Distraction alerts and session reminders">
           <Toggle
+            label="Notifications"
             checked={settings.notificationsEnabled}
             onChange={(v) => save({ notificationsEnabled: v })}
           />
         </Row>
         <Row title="Launch on login" desc="Start Flowline automatically and track in the tray">
-          <Toggle checked={settings.autostart} onChange={(v) => save({ autostart: v })} />
+          <Toggle
+            label="Launch on login"
+            checked={settings.autostart}
+            onChange={(v) => save({ autostart: v })}
+          />
         </Row>
       </Card>
 

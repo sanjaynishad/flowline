@@ -22,6 +22,13 @@ export function Sessions(): JSX.Element {
 
   useEffect(() => {
     reload()
+    // Restore a session already running in the main process (e.g. started from the tray).
+    window.api.getActiveSession().then((s) => {
+      if (s) {
+        setActive(s)
+        setRemaining(Math.max(0, Math.round((s.startTs + s.plannedMin * 60 * 1000 - Date.now()) / 1000)))
+      }
+    })
   }, [])
 
   useEffect(() => {

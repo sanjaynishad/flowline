@@ -1,4 +1,3 @@
-import type Database from 'better-sqlite3'
 import { getDb } from './database'
 import type {
   ActivityEvent,
@@ -120,53 +119,88 @@ export function deleteEmptyEvent(id: number): void {
 
 // ---------- Aggregates ----------
 
-function categoryTotals(db: Database.Database, range: DateRange): CategoryTotals {
-  const rows = db
-    .prepare(
-      `SELECT category, SUM(duration_sec) AS total
-       FROM activity_events
-       WHERE is_afk = 0 AND start_ts >= ? AND start_ts < ?
-       GROUP BY category`
-    )
-    .all(range.start, range.end) as { category: Category; total: number }[]
+interface SpanRow {
+  category: Category
+  label: string
+  domain: string | null
+  start_ts: number
+  end_ts: number
+}
 
+// Spans that overlap [start, end); a single foreground window is one span and may cross boundaries.
+function overlappingSpans(range: DateRange): SpanRow[] {
+  return getDb()
+    .prepare(
+      `SELECT category, COALESCE(domain, app_name) AS label, domain, start_ts, end_ts
+       FROM activity_events
+       WHERE is_afk = 0 AND start_ts < ? AND end_ts > ?`
+    )
+    .all(range.end, range.start) as SpanRow[]
+}
+
+function clippedSec(s: SpanRow, range: DateRange): number {
+  const start = Math.max(s.start_ts, range.start)
+  const end = Math.min(s.end_ts, range.end)
+  return Math.max(0, (end - start) / 1000)
+}
+
+function nextLocalMidnight(ms: number): number {
+  const d = new Date(ms)
+  d.setHours(24, 0, 0, 0)
+  return d.getTime()
+}
+
+// Splits a [startMs, endMs) span into per-local-day segments so midnight crossings land on the right day.
+function forEachLocalDaySegment(
+  startMs: number,
+  endMs: number,
+  fn: (dayKey: string, seconds: number) => void
+): void {
+  let cur = startMs
+  while (cur < endMs) {
+    const boundary = Math.min(endMs, nextLocalMidnight(cur))
+    fn(toLocalDateKey(new Date(cur)), (boundary - cur) / 1000)
+    cur = boundary
+  }
+}
+
+function categoryTotals(range: DateRange): CategoryTotals {
   const totals: CategoryTotals = { productive: 0, neutral: 0, distracted: 0 }
-  for (const r of rows) {
-    totals[r.category] = r.total
+  for (const s of overlappingSpans(range)) {
+    totals[s.category] += clippedSec(s, range)
   }
 
+  totals.productive = Math.round(totals.productive)
+  totals.neutral = Math.round(totals.neutral)
+  totals.distracted = Math.round(totals.distracted)
   return totals
 }
 
 export function getTopApps(range: DateRange, limit = 5): AppUsage[] {
-  const rows = getDb()
-    .prepare(
-      `SELECT
-         COALESCE(domain, app_name) AS label,
-         domain,
-         category,
-         SUM(duration_sec) AS total
-       FROM activity_events
-       WHERE is_afk = 0 AND start_ts >= ? AND start_ts < ?
-       GROUP BY label, category
-       ORDER BY total DESC
-       LIMIT ?`
-    )
-    .all(range.start, range.end, limit) as {
-    label: string
-    domain: string | null
-    category: Category
-    total: number
-  }[]
+  const spans = overlappingSpans(range)
+  const byLabel = new Map<string, { label: string; domain: string | null; category: Category; sec: number }>()
+  let grand = 0
 
-  const grand = rows.reduce((sum, r) => sum + r.total, 0) || 1
-  return rows.map((r) => ({
-    appName: r.label,
-    domain: r.domain,
-    category: r.category,
-    durationSec: r.total,
-    share: r.total / grand
-  }))
+  for (const s of spans) {
+    const sec = clippedSec(s, range)
+    grand += sec
+    const key = `${s.label}|${s.category}`
+    const entry = byLabel.get(key) ?? { label: s.label, domain: s.domain, category: s.category, sec: 0 }
+    entry.sec += sec
+    byLabel.set(key, entry)
+  }
+
+  const denom = grand || 1
+  return Array.from(byLabel.values())
+    .sort((a, b) => b.sec - a.sec)
+    .slice(0, limit)
+    .map((e) => ({
+      appName: e.label,
+      domain: e.domain,
+      category: e.category,
+      durationSec: Math.round(e.sec),
+      share: e.sec / denom
+    }))
 }
 
 export function getContextSwitches(range: DateRange): number {
@@ -174,15 +208,14 @@ export function getContextSwitches(range: DateRange): number {
     .prepare(
       `SELECT COUNT(*) AS c
        FROM activity_events
-       WHERE is_afk = 0 AND start_ts >= ? AND start_ts < ?`
+       WHERE is_afk = 0 AND start_ts < ? AND end_ts > ?`
     )
-    .get(range.start, range.end) as { c: number }
+    .get(range.end, range.start) as { c: number }
   return row.c
 }
 
 export function getDashboardSummary(range: DateRange): DashboardSummary {
-  const db = getDb()
-  const totals = categoryTotals(db, range)
+  const totals = categoryTotals(range)
   const totalTrackedSec = totals.productive + totals.neutral + totals.distracted
 
   return {
@@ -198,30 +231,33 @@ export function getDashboardSummary(range: DateRange): DashboardSummary {
 }
 
 export function getTimeline(range: DateRange, buckets = 24): TimelinePoint[] {
-  const db = getDb()
   const span = range.end - range.start
   const bucketMs = Math.max(1, Math.floor(span / buckets))
-  const rows = db
-    .prepare(
-      `SELECT category, start_ts, duration_sec
-       FROM activity_events
-       WHERE is_afk = 0 AND start_ts >= ? AND start_ts < ?`
-    )
-    .all(range.start, range.end) as { category: Category; start_ts: number; duration_sec: number }[]
+  const spans = overlappingSpans(range)
 
-  const points: TimelinePoint[] = Array.from({ length: buckets }, (_, i) => ({
-    ts: range.start + i * bucketMs,
-    productive: 0,
-    neutral: 0,
-    distracted: 0
-  }))
+  const acc: { productive: number; neutral: number; distracted: number }[] = Array.from(
+    { length: buckets },
+    () => ({ productive: 0, neutral: 0, distracted: 0 })
+  )
 
-  for (const r of rows) {
-    const idx = Math.min(buckets - 1, Math.floor((r.start_ts - range.start) / bucketMs))
-    points[idx][r.category] += Math.round(r.duration_sec / 60)
+  for (const s of spans) {
+    let cur = Math.max(s.start_ts, range.start)
+    const end = Math.min(s.end_ts, range.end)
+    while (cur < end) {
+      const idx = Math.min(buckets - 1, Math.floor((cur - range.start) / bucketMs))
+      const bucketEnd = range.start + (idx + 1) * bucketMs
+      const segEnd = Math.min(end, bucketEnd)
+      acc[idx][s.category] += (segEnd - cur) / 1000 / 60
+      cur = segEnd
+    }
   }
 
-  return points
+  return acc.map((a, i) => ({
+    ts: range.start + i * bucketMs,
+    productive: Math.round(a.productive),
+    neutral: Math.round(a.neutral),
+    distracted: Math.round(a.distracted)
+  }))
 }
 
 export function getAppMetrics(range: DateRange, limit = 50): AppUsage[] {
@@ -267,54 +303,57 @@ export function getRecentEvents(range: DateRange, limit = 40): ActivityEvent[] {
 // ---------- Weekly / streaks ----------
 
 export function getDailyTotals(range: DateRange): DailyTotal[] {
-  const rows = getDb()
-    .prepare(
-      `SELECT
-         date(start_ts / 1000, 'unixepoch', 'localtime') AS day,
-         category,
-         SUM(duration_sec) AS total
-       FROM activity_events
-       WHERE is_afk = 0 AND start_ts >= ? AND start_ts < ?
-       GROUP BY day, category
-       ORDER BY day`
-    )
-    .all(range.start, range.end) as { day: string; category: Category; total: number }[]
-
   const map = new Map<string, DailyTotal>()
-  for (const r of rows) {
-    const entry = map.get(r.day) ?? { day: r.day, productive: 0, neutral: 0, distracted: 0 }
-    entry[r.category] = r.total
-    map.set(r.day, entry)
+
+  for (const s of overlappingSpans(range)) {
+    const start = Math.max(s.start_ts, range.start)
+    const end = Math.min(s.end_ts, range.end)
+    forEachLocalDaySegment(start, end, (day, seconds) => {
+      const entry = map.get(day) ?? { day, productive: 0, neutral: 0, distracted: 0 }
+      entry[s.category] += seconds
+      map.set(day, entry)
+    })
   }
 
   return Array.from(map.values())
+    .map((e) => ({
+      day: e.day,
+      productive: Math.round(e.productive),
+      neutral: Math.round(e.neutral),
+      distracted: Math.round(e.distracted)
+    }))
+    .sort((a, b) => a.day.localeCompare(b.day))
 }
 
 export function getDeepWorkStreak(targetMin: number): number {
-  const db = getDb()
-  const rows = db
+  const rows = getDb()
     .prepare(
-      `SELECT
-         date(start_ts / 1000, 'unixepoch', 'localtime') AS day,
-         SUM(duration_sec) AS total
-       FROM activity_events
-       WHERE is_afk = 0 AND category = 'productive'
-       GROUP BY day
-       ORDER BY day DESC`
+      `SELECT start_ts, end_ts FROM activity_events WHERE is_afk = 0 AND category = 'productive'`
     )
-    .all() as { day: string; total: number }[]
+    .all() as { start_ts: number; end_ts: number }[]
 
-  const metDays = new Set(rows.filter((r) => r.total >= targetMin * 60).map((r) => r.day))
+  const perDay = new Map<string, number>()
+  for (const r of rows) {
+    forEachLocalDaySegment(r.start_ts, r.end_ts, (day, seconds) => {
+      perDay.set(day, (perDay.get(day) ?? 0) + seconds)
+    })
+  }
+
+  const targetSec = targetMin * 60
+  const metDays = new Set(
+    Array.from(perDay.entries())
+      .filter(([, sec]) => sec >= targetSec)
+      .map(([day]) => day)
+  )
+
   let streak = 0
   const cursor = new Date()
-  // A streak still counts if today's goal isn't met yet, so start from today and allow today to be pending.
+  // Today can still be pending, so start from today without breaking when it isn't met yet.
   for (let i = 0; i < 366; i++) {
     const key = toLocalDateKey(cursor)
     if (metDays.has(key)) {
       streak++
-    } else if (i === 0) {
-      // today not yet met — keep looking back from yesterday without breaking
-    } else {
+    } else if (i !== 0) {
       break
     }
 

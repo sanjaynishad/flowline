@@ -47,10 +47,17 @@ export function classify(candidate: Candidate, rules: Rule[]): Classification {
 
   // Match precedence: domain (most specific) → exe → title keyword.
   if (domain) {
+    let best: Rule | null = null
     for (const rule of rules) {
       if (rule.matchType === 'domain' && domainMatches(rule.matcher, domain)) {
-        return { category: rule.category, thresholdSec: rule.thresholdSec, matchedRuleId: rule.id }
+        if (!best || rule.matcher.length > best.matcher.length) {
+          best = rule
+        }
       }
+    }
+
+    if (best) {
+      return { category: best.category, thresholdSec: best.thresholdSec, matchedRuleId: best.id }
     }
   }
 

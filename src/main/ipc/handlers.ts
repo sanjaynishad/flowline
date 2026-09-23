@@ -30,6 +30,15 @@ export function registerIpcHandlers(deps: HandlerDeps): void {
 
   ipcMain.handle(IPC.settingsSet, (_e, patch: Partial<Settings>) => {
     const next = setSettings(patch)
+    // Keep the streak/goal source of truth in sync with the settings mirror.
+    if (patch.deepWorkTargetMin !== undefined) {
+      setGoal('deep_work_min', patch.deepWorkTargetMin)
+    }
+
+    if (patch.distractionLimitMin !== undefined) {
+      setGoal('distraction_max_min', patch.distractionLimitMin)
+    }
+
     tracker.updateConfig({
       idleThresholdSec: next.idleThresholdSec,
       heartbeatSec: next.heartbeatSec,
@@ -97,6 +106,8 @@ export function registerIpcHandlers(deps: HandlerDeps): void {
   })
 
   ipcMain.handle(IPC.sessionList, (_e, range: DateRange) => sessionManager.list(range))
+
+  ipcMain.handle(IPC.sessionActive, () => sessionManager.getActive())
 
   ipcMain.handle(IPC.goalsList, () => getGoals())
 

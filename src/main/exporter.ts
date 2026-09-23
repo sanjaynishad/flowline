@@ -10,7 +10,12 @@ function toCsv(rows: Record<string, unknown>[]): string {
 
   const headers = Object.keys(rows[0])
   const escape = (v: unknown): string => {
-    const s = v === null || v === undefined ? '' : String(v)
+    let s = v === null || v === undefined ? '' : String(v)
+    // Neutralize spreadsheet formula injection from attacker-controlled titles/URLs.
+    if (/^[=+\-@\t\r]/.test(s)) {
+      s = `'${s}`
+    }
+
     return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
   }
 

@@ -6,6 +6,7 @@ interface ActiveSession {
   id: number
   type: 'focus' | 'break'
   plannedMin: number
+  startTs: number
   timer: NodeJS.Timeout
 }
 
@@ -20,12 +21,13 @@ class SessionManager {
   start(plannedMin: number, type: 'focus' | 'break'): FocusSession {
     this.cancel(false)
     const id = startSession(plannedMin, type)
+    const startTs = Date.now()
     const timer = setTimeout(() => this.complete(), plannedMin * 60 * 1000)
-    this.active = { id, type, plannedMin, timer }
+    this.active = { id, type, plannedMin, startTs, timer }
 
     return {
       id,
-      startTs: Date.now(),
+      startTs,
       endTs: null,
       plannedMin,
       type,
@@ -68,6 +70,21 @@ class SessionManager {
 
   getActiveId(): number | null {
     return this.active?.id ?? null
+  }
+
+  getActive(): FocusSession | null {
+    if (!this.active) {
+      return null
+    }
+
+    return {
+      id: this.active.id,
+      startTs: this.active.startTs,
+      endTs: null,
+      plannedMin: this.active.plannedMin,
+      type: this.active.type,
+      completed: 0
+    }
   }
 
   list(range: DateRange): FocusSession[] {

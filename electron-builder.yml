@@ -13,7 +13,7 @@ files:
   - '!browser-extension/*'
 extraResources:
   - from: resources
-    to: ../resources
+    to: resources
   - from: browser-extension
     to: browser-extension
 asarUnpack:

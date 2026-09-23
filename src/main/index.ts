@@ -16,6 +16,12 @@ let tray: Tray | null = null
 let isQuitting = false
 let lastStatusSent = 0
 
+function resourcePath(file: string): string {
+  return is.dev
+    ? join(__dirname, '../../resources', file)
+    : join(process.resourcesPath, 'resources', file)
+}
+
 function createWindow(): void {
   mainWindow = new BrowserWindow({
     width: 1280,
@@ -25,7 +31,7 @@ function createWindow(): void {
     show: false,
     autoHideMenuBar: true,
     backgroundColor: '#0f131c',
-    icon: join(__dirname, '../../resources/icon.png'),
+    icon: resourcePath('icon.png'),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
@@ -33,7 +39,10 @@ function createWindow(): void {
   })
 
   mainWindow.on('ready-to-show', () => {
-    mainWindow?.show()
+    // Launched at login with --hidden: stay in the tray instead of popping the window.
+    if (!process.argv.includes('--hidden')) {
+      mainWindow?.show()
+    }
   })
 
   mainWindow.on('close', (e) => {
@@ -56,7 +65,7 @@ function createWindow(): void {
 }
 
 function createTray(): void {
-  const icon = nativeImage.createFromPath(join(__dirname, '../../resources/tray.png'))
+  const icon = nativeImage.createFromPath(resourcePath('tray.png'))
   tray = new Tray(icon)
   tray.setToolTip('Flowline')
 

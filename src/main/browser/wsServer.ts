@@ -20,7 +20,14 @@ class BrowserBridge {
     this.onStatusChange = onStatusChange ?? null
     this.wss = new WebSocketServer({ host: '127.0.0.1', port })
 
-    this.wss.on('connection', (ws) => {
+    this.wss.on('connection', (ws, req) => {
+      // Only accept the browser extension; reject web pages that can reach loopback.
+      const origin = req.headers.origin ?? ''
+      if (!/^(chrome-extension|moz-extension):\/\//.test(origin)) {
+        ws.close(1008, 'origin not allowed')
+        return
+      }
+
       this.clients.add(ws)
       this.emitStatus()
 

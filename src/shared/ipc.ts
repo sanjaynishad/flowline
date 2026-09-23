@@ -15,6 +15,7 @@ export const IPC = {
   sessionStart: 'sessions:start',
   sessionStop: 'sessions:stop',
   sessionList: 'sessions:list',
+  sessionActive: 'sessions:active',
   goalsList: 'goals:list',
   goalsSet: 'goals:set',
   exportData: 'export:data',

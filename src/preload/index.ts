@@ -55,6 +55,7 @@ const api = {
   stopSession: (): Promise<{ ok: boolean }> => ipcRenderer.invoke(IPC.sessionStop),
   listSessions: (range: DateRange): Promise<FocusSession[]> =>
     ipcRenderer.invoke(IPC.sessionList, range),
+  getActiveSession: (): Promise<FocusSession | null> => ipcRenderer.invoke(IPC.sessionActive),
 
   listGoals: (): Promise<Goal[]> => ipcRenderer.invoke(IPC.goalsList),
   setGoal: (metric: Goal['metric'], target: number): Promise<Goal[]> =>
