@@ -268,10 +268,10 @@ export function getRecentEvents(range: DateRange, limit = 40): ActivityEvent[] {
   const rows = getDb()
     .prepare(
       `SELECT * FROM activity_events
-       WHERE start_ts >= ? AND start_ts < ?
+       WHERE start_ts < ? AND end_ts > ?
        ORDER BY start_ts DESC LIMIT ?`
     )
-    .all(range.start, range.end, limit) as Array<{
+    .all(range.end, range.start, limit) as Array<{
     id: number
     app_name: string
     exe_path: string | null

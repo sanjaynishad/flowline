@@ -10,6 +10,11 @@ export interface BrowserTab {
 
 const FRESHNESS_MS = 5000
 
+// Extension ID derived from the pinned public key in browser-extension/manifest.json.
+const ALLOWED_ORIGINS = new Set([
+  'chrome-extension://jcoofjgacfkefbpbkeecocghleheinpa'
+])
+
 class BrowserBridge {
   private wss: WebSocketServer | null = null
   private latest: BrowserTab | null = null
@@ -21,9 +26,8 @@ class BrowserBridge {
     this.wss = new WebSocketServer({ host: '127.0.0.1', port })
 
     this.wss.on('connection', (ws, req) => {
-      // Only accept the browser extension; reject web pages that can reach loopback.
-      const origin = req.headers.origin ?? ''
-      if (!/^(chrome-extension|moz-extension):\/\//.test(origin)) {
+      // Only the Flowline Bridge extension may connect; blocks web pages and other extensions.
+      if (!ALLOWED_ORIGINS.has(req.headers.origin ?? '')) {
         ws.close(1008, 'origin not allowed')
         return
       }

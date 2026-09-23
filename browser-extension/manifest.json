@@ -3,6 +3,7 @@
   "name": "Flowline Bridge",
   "version": "0.1.0",
   "description": "Reports the active browser tab's URL to the Flowline desktop app for accurate focus tracking.",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsfSfSQygF2X5sv8fLBk9ih8iLlwoAHLsrHi00Ln1ycKtCCFDRp43JIRpY4IaVuTZR5/4VFuBwpqMza+NzcI+iDF6wtEBD8bLHFyxXmmeA5Zdv9bsYEYkHnZc3yxfvThC2gSTfSvT4S+EQUQdc3W20dkiut/r1nuqF1xH7buWsz6tcDzI2HLBpSzrjL/LNDoqiLCmfpzXd5uSZmm/XPmKsvNJ4tKhQsT59rKydMRIhTcpzllGf0W2kkFBGElRHFeWD+UvqGjXwEkkwwJScd8StIezBRQAa+cyGievuxmorrZc+JGZUY1MM32mXMx3HOLOHv1yFQFwzATPcpQOTgPK6wIDAQAB",
   "permissions": ["tabs"],
   "host_permissions": ["<all_urls>"],
   "background": {
