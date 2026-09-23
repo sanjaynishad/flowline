@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root,
+.dark {
+  --md-surface: 15 19 28;
+  --md-surface-dim: 15 19 28;
+  --md-surface-bright: 53 57 66;
+  --md-surface-container-lowest: 10 14 22;
+  --md-surface-container-low: 24 28 36;
+  --md-surface-container: 28 32 40;
+  --md-surface-container-high: 38 42 51;
+  --md-surface-container-highest: 49 53 62;
+  --md-surface-variant: 49 53 62;
+  --md-on-surface: 223 226 238;
+  --md-on-surface-variant: 186 203 184;
+  --md-inverse-surface: 223 226 238;
+  --md-inverse-on-surface: 44 48 57;
+  --md-outline: 132 149 132;
+  --md-outline-variant: 59 75 60;
+  --md-surface-tint: 0 228 112;
+  --md-primary: 178 255 190;
+  --md-on-primary: 0 57 23;
+  --md-primary-container: 0 240 118;
+  --md-on-primary-container: 0 104 47;
+  --md-inverse-primary: 0 109 50;
+  --md-secondary: 123 208 255;
+  --md-on-secondary: 0 53 74;
+  --md-secondary-container: 0 166 224;
+  --md-on-secondary-container: 0 55 77;
+  --md-tertiary: 255 232 232;
+  --md-on-tertiary: 103 0 27;
+  --md-tertiary-container: 255 194 197;
+  --md-on-tertiary-container: 181 0 54;
+  --md-error: 255 180 171;
+  --md-on-error: 105 0 5;
+  --md-error-container: 147 0 10;
+  --md-on-error-container: 255 218 214;
+  --md-primary-fixed: 100 255 146;
+  --md-primary-fixed-dim: 0 228 112;
+  --md-on-primary-fixed: 0 33 10;
+  --md-on-primary-fixed-variant: 0 82 36;
+  --md-secondary-fixed: 196 231 255;
+  --md-secondary-fixed-dim: 123 208 255;
+  --md-on-secondary-fixed: 0 30 44;
+  --md-on-secondary-fixed-variant: 0 76 105;
+  --md-tertiary-fixed: 255 218 219;
+  --md-tertiary-fixed-dim: 255 178 183;
+  --md-on-tertiary-fixed: 64 0 13;
+  --md-on-tertiary-fixed-variant: 146 0 42;
+  --md-background: 15 19 28;
+  --md-on-background: 223 226 238;
+}
+
+.light {
+  --md-surface: 246 248 244;
+  --md-surface-dim: 216 219 212;
+  --md-surface-bright: 246 248 244;
+  --md-surface-container-lowest: 255 255 255;
+  --md-surface-container-low: 240 243 236;
+  --md-surface-container: 234 238 230;
+  --md-surface-container-high: 229 232 224;
+  --md-surface-container-highest: 223 226 218;
+  --md-surface-variant: 221 229 218;
+  --md-on-surface: 25 28 23;
+  --md-on-surface-variant: 65 73 65;
+  --md-inverse-surface: 46 49 44;
+  --md-inverse-on-surface: 239 242 233;
+  --md-outline: 113 121 112;
+  --md-outline-variant: 193 201 190;
+  --md-surface-tint: 0 109 50;
+  --md-primary: 0 109 50;
+  --md-on-primary: 255 255 255;
+  --md-primary-container: 100 255 146;
+  --md-on-primary-container: 0 33 10;
+  --md-inverse-primary: 0 228 112;
+  --md-secondary: 0 102 138;
+  --md-on-secondary: 255 255 255;
+  --md-secondary-container: 196 231 255;
+  --md-on-secondary-container: 0 30 44;
+  --md-tertiary: 181 0 54;
+  --md-on-tertiary: 255 255 255;
+  --md-tertiary-container: 255 218 219;
+  --md-on-tertiary-container: 64 0 13;
+  --md-error: 186 26 26;
+  --md-on-error: 255 255 255;
+  --md-error-container: 255 218 214;
+  --md-on-error-container: 65 0 2;
+  --md-primary-fixed: 100 255 146;
+  --md-primary-fixed-dim: 0 228 112;
+  --md-on-primary-fixed: 0 33 10;
+  --md-on-primary-fixed-variant: 0 82 36;
+  --md-secondary-fixed: 196 231 255;
+  --md-secondary-fixed-dim: 123 208 255;
+  --md-on-secondary-fixed: 0 30 44;
+  --md-on-secondary-fixed-variant: 0 76 105;
+  --md-tertiary-fixed: 255 218 219;
+  --md-tertiary-fixed-dim: 255 178 183;
+  --md-on-tertiary-fixed: 64 0 13;
+  --md-on-tertiary-fixed-variant: 146 0 42;
+  --md-background: 246 248 244;
+  --md-on-background: 25 28 23;
+}
+
+@layer base {
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    overscroll-behavior: none;
+    @apply bg-background text-on-surface font-sans antialiased;
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+  user-select: none;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-surface-container-highest rounded-full;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}

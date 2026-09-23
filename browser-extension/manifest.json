@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Flowline Bridge",
+  "version": "0.1.0",
+  "description": "Reports the active browser tab's URL to the Flowline desktop app for accurate focus tracking.",
+  "permissions": ["tabs"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "128": "icon128.png"
+  }
+}
