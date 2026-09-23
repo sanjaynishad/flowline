@@ -285,19 +285,23 @@ export function getRecentEvents(range: DateRange, limit = 40): ActivityEvent[] {
     is_afk: number
   }>
 
-  return rows.map((r) => ({
-    id: r.id,
-    appName: r.app_name,
-    exePath: r.exe_path,
-    windowTitle: r.window_title,
-    url: r.url,
-    domain: r.domain,
-    category: r.category,
-    startTs: r.start_ts,
-    endTs: r.end_ts,
-    durationSec: r.duration_sec,
-    isAfk: r.is_afk
-  }))
+  return rows.map((r) => {
+    const startTs = Math.max(r.start_ts, range.start)
+    const endTs = Math.min(r.end_ts, range.end)
+    return {
+      id: r.id,
+      appName: r.app_name,
+      exePath: r.exe_path,
+      windowTitle: r.window_title,
+      url: r.url,
+      domain: r.domain,
+      category: r.category,
+      startTs,
+      endTs,
+      durationSec: Math.max(0, Math.round((endTs - startTs) / 1000)),
+      isAfk: r.is_afk
+    }
+  })
 }
 
 // ---------- Weekly / streaks ----------
