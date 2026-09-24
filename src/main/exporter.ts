@@ -31,7 +31,7 @@ export async function exportData(
   range: DateRange,
   format: 'csv' | 'json'
 ): Promise<{ ok: boolean; path?: string }> {
-  const events = getRecentEvents(range, 100000)
+  const events = getRecentEvents(range)
   const defaultName = `flowline-export-${new Date().toISOString().slice(0, 10)}.${format}`
 
   const result = await dialog.showSaveDialog({

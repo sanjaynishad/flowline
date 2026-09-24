@@ -204,14 +204,24 @@ export function getTopApps(range: DateRange, limit = 5): AppUsage[] {
 }
 
 export function getContextSwitches(range: DateRange): number {
-  const row = getDb()
+  const rows = getDb()
     .prepare(
-      `SELECT COUNT(*) AS c
+      `SELECT COALESCE(domain, app_name) AS label
        FROM activity_events
-       WHERE is_afk = 0 AND start_ts < ? AND end_ts > ?`
+       WHERE is_afk = 0 AND start_ts < ? AND end_ts > ?
+       ORDER BY start_ts ASC`
     )
-    .get(range.end, range.start) as { c: number }
-  return row.c
+    .all(range.end, range.start) as { label: string }[]
+
+  // A context switch is a transition to a different app/site, not merely another span.
+  let switches = 0
+  for (let i = 1; i < rows.length; i++) {
+    if (rows[i].label !== rows[i - 1].label) {
+      switches++
+    }
+  }
+
+  return switches
 }
 
 export function getDashboardSummary(range: DateRange): DashboardSummary {
@@ -264,14 +274,14 @@ export function getAppMetrics(range: DateRange, limit = 50): AppUsage[] {
   return getTopApps(range, limit)
 }
 
-export function getRecentEvents(range: DateRange, limit = 40): ActivityEvent[] {
-  const rows = getDb()
-    .prepare(
-      `SELECT * FROM activity_events
+export function getRecentEvents(range: DateRange, limit?: number): ActivityEvent[] {
+  const base = `SELECT * FROM activity_events
        WHERE start_ts < ? AND end_ts > ?
-       ORDER BY start_ts DESC LIMIT ?`
-    )
-    .all(range.end, range.start, limit) as Array<{
+       ORDER BY start_ts DESC`
+  const stmt = getDb().prepare(limit === undefined ? base : `${base} LIMIT ?`)
+  const rows = (limit === undefined
+    ? stmt.all(range.end, range.start)
+    : stmt.all(range.end, range.start, limit)) as Array<{
     id: number
     app_name: string
     exe_path: string | null
