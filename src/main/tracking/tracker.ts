@@ -65,6 +65,8 @@ class Tracker {
       this.openSpan(initial)
     }
 
+    browserBridge.setTabListener(() => this.onBrowserTab())
+
     this.heartbeat = setInterval(() => this.tick(), this.heartbeatSec * 1000)
     this.emitStatus()
   }
@@ -212,6 +214,33 @@ class Tracker {
     return `${this.span.exePath ?? this.span.appName}|${this.span.domain ?? this.span.windowTitle ?? ''}`
   }
 
+  // Reopens the span when the foreground window's identity (including browser tab) changed; returns true if it split.
+  private syncActiveWindow(now: number): boolean {
+    const current = ActiveWindow.getActiveWindow() as WinInfo | null
+    if (!current) {
+      return false
+    }
+
+    const candidate = this.buildCandidate(current)
+    if (this.candidateKey(candidate) === this.spanKey()) {
+      return false
+    }
+
+    this.closeSpan(now)
+    this.openSpan(current)
+    this.emitStatus()
+    return true
+  }
+
+  // Fired the moment the extension reports a tab, so within-heartbeat tab switches aren't misattributed.
+  private onBrowserTab(): void {
+    if (!this.tracking || this.afk || !this.span) {
+      return
+    }
+
+    this.syncActiveWindow(Date.now())
+  }
+
   private tick(): void {
     if (!this.tracking) {
       return
@@ -245,15 +274,8 @@ class Tracker {
     }
 
     // Detect in-window browser tab changes (no OS foreground event fires for those).
-    const current = ActiveWindow.getActiveWindow() as WinInfo | null
-    if (current) {
-      const candidate = this.buildCandidate(current)
-      if (this.candidateKey(candidate) !== this.spanKey()) {
-        this.closeSpan(now)
-        this.openSpan(current)
-        this.emitStatus()
-        return
-      }
+    if (this.syncActiveWindow(now)) {
+      return
     }
 
     this.flushSpan(now)

@@ -20,6 +20,7 @@ class BrowserBridge {
   private latest: BrowserTab | null = null
   private clients = new Set<WebSocket>()
   private onStatusChange: ((connected: boolean) => void) | null = null
+  private onTab: (() => void) | null = null
 
   start(port: number, onStatusChange?: (connected: boolean) => void): void {
     this.onStatusChange = onStatusChange ?? null
@@ -55,21 +56,27 @@ class BrowserBridge {
     })
   }
 
+  // Registers a callback fired on every tab report so the tracker can split the browser span immediately.
+  setTabListener(cb: () => void): void {
+    this.onTab = cb
+  }
+
   private handleMessage(text: string): void {
     try {
       const msg = JSON.parse(text) as { url?: string; title?: string; focused?: boolean }
       if (msg.focused === false) {
         this.latest = null
-        return
+      } else {
+        const url = msg.url ?? null
+        this.latest = {
+          url,
+          domain: extractDomain(url),
+          title: msg.title ?? null,
+          receivedAt: Date.now()
+        }
       }
 
-      const url = msg.url ?? null
-      this.latest = {
-        url,
-        domain: extractDomain(url),
-        title: msg.title ?? null,
-        receivedAt: Date.now()
-      }
+      this.onTab?.()
     } catch {
       // Ignore malformed frames.
     }
