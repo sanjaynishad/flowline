@@ -1,0 +1,106 @@
+/** @type {import('tailwindcss').Config} */
+const withVar = (name) => `rgb(var(${name}) / <alpha-value>)`
+
+module.exports = {
+  darkMode: 'class',
+  content: ['./src/renderer/index.html', './src/renderer/src/**/*.{js,ts,jsx,tsx}'],
+  theme: {
+    extend: {
+      colors: {
+        surface: withVar('--md-surface'),
+        'surface-dim': withVar('--md-surface-dim'),
+        'surface-bright': withVar('--md-surface-bright'),
+        'surface-container-lowest': withVar('--md-surface-container-lowest'),
+        'surface-container-low': withVar('--md-surface-container-low'),
+        'surface-container': withVar('--md-surface-container'),
+        'surface-container-high': withVar('--md-surface-container-high'),
+        'surface-container-highest': withVar('--md-surface-container-highest'),
+        'surface-variant': withVar('--md-surface-variant'),
+        'on-surface': withVar('--md-on-surface'),
+        'on-surface-variant': withVar('--md-on-surface-variant'),
+        'inverse-surface': withVar('--md-inverse-surface'),
+        'inverse-on-surface': withVar('--md-inverse-on-surface'),
+        outline: withVar('--md-outline'),
+        'outline-variant': withVar('--md-outline-variant'),
+        'surface-tint': withVar('--md-surface-tint'),
+        primary: withVar('--md-primary'),
+        'on-primary': withVar('--md-on-primary'),
+        'primary-container': withVar('--md-primary-container'),
+        'on-primary-container': withVar('--md-on-primary-container'),
+        'inverse-primary': withVar('--md-inverse-primary'),
+        secondary: withVar('--md-secondary'),
+        'on-secondary': withVar('--md-on-secondary'),
+        'secondary-container': withVar('--md-secondary-container'),
+        'on-secondary-container': withVar('--md-on-secondary-container'),
+        tertiary: withVar('--md-tertiary'),
+        'on-tertiary': withVar('--md-on-tertiary'),
+        'tertiary-container': withVar('--md-tertiary-container'),
+        'on-tertiary-container': withVar('--md-on-tertiary-container'),
+        error: withVar('--md-error'),
+        'on-error': withVar('--md-on-error'),
+        'error-container': withVar('--md-error-container'),
+        'on-error-container': withVar('--md-on-error-container'),
+        'primary-fixed': withVar('--md-primary-fixed'),
+        'primary-fixed-dim': withVar('--md-primary-fixed-dim'),
+        'on-primary-fixed': withVar('--md-on-primary-fixed'),
+        'on-primary-fixed-variant': withVar('--md-on-primary-fixed-variant'),
+        'secondary-fixed': withVar('--md-secondary-fixed'),
+        'secondary-fixed-dim': withVar('--md-secondary-fixed-dim'),
+        'on-secondary-fixed': withVar('--md-on-secondary-fixed'),
+        'on-secondary-fixed-variant': withVar('--md-on-secondary-fixed-variant'),
+        'tertiary-fixed': withVar('--md-tertiary-fixed'),
+        'tertiary-fixed-dim': withVar('--md-tertiary-fixed-dim'),
+        'on-tertiary-fixed': withVar('--md-on-tertiary-fixed'),
+        'on-tertiary-fixed-variant': withVar('--md-on-tertiary-fixed-variant'),
+        background: withVar('--md-background'),
+        'on-background': withVar('--md-on-background')
+      },
+      fontFamily: {
+        'display-lg': ['Inter', 'sans-serif'],
+        'headline-xl': ['Inter', 'sans-serif'],
+        'headline-lg': ['Inter', 'sans-serif'],
+        'headline-md': ['Inter', 'sans-serif'],
+        'body-lg': ['Inter', 'sans-serif'],
+        'body-md': ['Inter', 'sans-serif'],
+        'body-sm': ['Inter', 'sans-serif'],
+        'code-metric-lg': ['"JetBrains Mono"', 'monospace'],
+        'code-metric-md': ['"JetBrains Mono"', 'monospace'],
+        'code-data': ['"JetBrains Mono"', 'monospace'],
+        'label-caps': ['"JetBrains Mono"', 'monospace'],
+        sans: ['Inter', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'monospace']
+      },
+      fontSize: {
+        'display-lg': ['40px', { lineHeight: '48px', letterSpacing: '-0.025em', fontWeight: '700' }],
+        'headline-xl': ['30px', { lineHeight: '38px', letterSpacing: '-0.02em', fontWeight: '600' }],
+        'headline-lg': ['24px', { lineHeight: '32px', letterSpacing: '-0.015em', fontWeight: '600' }],
+        'headline-md': ['18px', { lineHeight: '24px', letterSpacing: '-0.01em', fontWeight: '600' }],
+        'body-lg': ['15px', { lineHeight: '22px', letterSpacing: '0em' }],
+        'body-md': ['13px', { lineHeight: '18px', letterSpacing: '0.005em' }],
+        'body-sm': ['11px', { lineHeight: '16px', letterSpacing: '0.01em' }],
+        'code-metric-lg': ['28px', { lineHeight: '32px', letterSpacing: '-0.03em', fontWeight: '600' }],
+        'code-metric-md': ['18px', { lineHeight: '22px', letterSpacing: '-0.02em', fontWeight: '500' }],
+        'code-data': ['12px', { lineHeight: '16px', letterSpacing: '0em' }],
+        'label-caps': ['10px', { lineHeight: '12px', letterSpacing: '0.08em', fontWeight: '600' }]
+      },
+      spacing: {
+        gutter: '1rem',
+        margin: '1.5rem',
+        'space-xs': '0.25rem',
+        'space-sm': '0.5rem',
+        'space-md': '0.75rem',
+        'space-lg': '1.25rem',
+        'space-xl': '2rem'
+      },
+      borderRadius: {
+        sm: '0.125rem',
+        DEFAULT: '0.25rem',
+        md: '0.375rem',
+        lg: '0.5rem',
+        xl: '0.75rem',
+        full: '9999px'
+      }
+    }
+  },
+  plugins: []
+}
