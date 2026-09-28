@@ -15,6 +15,9 @@ let mainWindow: BrowserWindow | null = null
 let tray: Tray | null = null
 let isQuitting = false
 let lastStatusSent = 0
+let pendingStatus: LiveStatus | null = null
+let statusTimer: NodeJS.Timeout | null = null
+const STATUS_MIN_INTERVAL_MS = 1000
 
 function resourcePath(file: string): string {
   return is.dev
@@ -101,12 +104,33 @@ function createTray(): void {
 
 function pushStatus(status: LiveStatus): void {
   const now = Date.now()
-  if (now - lastStatusSent < 1000) {
+  const elapsed = now - lastStatusSent
+
+  if (elapsed >= STATUS_MIN_INTERVAL_MS) {
+    if (statusTimer) {
+      clearTimeout(statusTimer)
+      statusTimer = null
+    }
+
+    lastStatusSent = now
+    pendingStatus = null
+    mainWindow?.webContents.send(IPC.statusUpdate, status)
     return
   }
 
-  lastStatusSent = now
-  mainWindow?.webContents.send(IPC.statusUpdate, status)
+  // Throttled: keep the newest status and flush it on the trailing edge so no transition is lost.
+  pendingStatus = status
+  if (!statusTimer) {
+    statusTimer = setTimeout(() => {
+      statusTimer = null
+      if (pendingStatus) {
+        const next = pendingStatus
+        pendingStatus = null
+        lastStatusSent = Date.now()
+        mainWindow?.webContents.send(IPC.statusUpdate, next)
+      }
+    }, STATUS_MIN_INTERVAL_MS - elapsed)
+  }
 }
 
 function applyAutostart(enabled: boolean): void {

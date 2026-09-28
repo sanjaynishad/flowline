@@ -60,7 +60,7 @@ class Tracker {
     })
 
     // No foreground event fires for the already-focused window, so seed the first span.
-    const initial = ActiveWindow.getActiveWindow() as WinInfo | null
+    const initial = this.getActiveWindowSafe()
     if (initial) {
       this.openSpan(initial)
     }
@@ -214,9 +214,18 @@ class Tracker {
     return `${this.span.exePath ?? this.span.appName}|${this.span.domain ?? this.span.windowTitle ?? ''}`
   }
 
+  // Returns null when the OS temporarily can't report a foreground window (lock screen, secure desktop, etc.).
+  private getActiveWindowSafe(): WinInfo | null {
+    try {
+      return ActiveWindow.getActiveWindow() as WinInfo | null
+    } catch {
+      return null
+    }
+  }
+
   // Reopens the span when the foreground window's identity (including browser tab) changed; returns true if it split.
   private syncActiveWindow(now: number): boolean {
-    const current = ActiveWindow.getActiveWindow() as WinInfo | null
+    const current = this.getActiveWindowSafe()
     if (!current) {
       return false
     }
@@ -264,7 +273,7 @@ class Tracker {
 
     if (this.afk || !this.span) {
       this.afk = false
-      const current = ActiveWindow.getActiveWindow() as WinInfo | null
+      const current = this.getActiveWindowSafe()
       if (current) {
         this.openSpan(current)
       }
