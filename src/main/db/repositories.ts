@@ -55,6 +55,11 @@ export function addRule(input: {
       'INSERT INTO rules (matcher, match_type, category, threshold_sec, created_at) VALUES (?, ?, ?, ?, ?)'
     )
     .run(input.matcher.trim(), input.matchType, input.category, input.thresholdSec ?? null, Date.now())
+  // Re-adding a rule clears any tombstone so future seed top-ups behave normally.
+  db.prepare('DELETE FROM deleted_rules WHERE matcher = ? AND match_type = ?').run(
+    input.matcher.trim(),
+    input.matchType
+  )
   const row = db.prepare('SELECT * FROM rules WHERE id = ?').get(info.lastInsertRowid) as RuleRow
   return mapRule(row)
 }
@@ -80,7 +85,18 @@ export function updateRule(
 }
 
 export function deleteRule(id: number): void {
-  getDb().prepare('DELETE FROM rules WHERE id = ?').run(id)
+  const db = getDb()
+  const row = db.prepare('SELECT matcher, match_type FROM rules WHERE id = ?').get(id) as
+    | { matcher: string; match_type: MatchType }
+    | undefined
+  db.prepare('DELETE FROM rules WHERE id = ?').run(id)
+  // Tombstone the deletion so a seed-version top-up can't recreate a removed default.
+  if (row) {
+    db.prepare('INSERT OR IGNORE INTO deleted_rules (matcher, match_type) VALUES (?, ?)').run(
+      row.matcher,
+      row.match_type
+    )
+  }
 }
 
 // ---------- Activity events ----------

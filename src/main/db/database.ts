@@ -33,6 +33,12 @@ CREATE TABLE IF NOT EXISTS rules (
 );
 CREATE UNIQUE INDEX IF NOT EXISTS idx_rules_unique ON rules(matcher, match_type);
 
+CREATE TABLE IF NOT EXISTS deleted_rules (
+  matcher    TEXT NOT NULL,
+  match_type TEXT NOT NULL,
+  PRIMARY KEY (matcher, match_type)
+);
+
 CREATE TABLE IF NOT EXISTS focus_sessions (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,
   start_ts    INTEGER NOT NULL,
@@ -217,9 +223,15 @@ function seedRules(): void {
   const insert = db.prepare(
     'INSERT OR IGNORE INTO rules (matcher, match_type, category, threshold_sec, created_at) VALUES (?, ?, ?, ?, ?)'
   )
+  // Skip defaults the user has deleted so version top-ups never resurrect them.
+  const tombstoned = db.prepare('SELECT 1 FROM deleted_rules WHERE matcher = ? AND match_type = ?')
   const now = Date.now()
   const tx = db.transaction(() => {
     for (const r of DEFAULT_RULES) {
+      if (tombstoned.get(r.matcher, r.matchType)) {
+        continue
+      }
+
       insert.run(r.matcher, r.matchType, r.category, r.thresholdSec ?? null, now)
     }
   })

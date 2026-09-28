@@ -106,7 +106,7 @@ export function Settings(): JSX.Element {
             max={60}
             className={numberInput}
             value={settings.heartbeatSec}
-            onChange={(e) => save({ heartbeatSec: Math.max(5, Number(e.target.value)) })}
+            onChange={(e) => save({ heartbeatSec: Math.min(60, Math.max(5, Number(e.target.value))) })}
           />
         </Row>
         <Row title="Distraction alert" desc="Notify after this many continuous minutes off-task">

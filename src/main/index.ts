@@ -211,6 +211,7 @@ if (!gotLock) {
 
   app.on('before-quit', () => {
     isQuitting = true
+    sessionManager.cancel(false)
     tracker.stop()
     browserBridge.stop()
   })

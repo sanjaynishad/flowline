@@ -73,6 +73,7 @@ class Tracker {
 
   reloadRules(): void {
     this.rules = getRules()
+    this.reclassifyActiveSpan()
   }
 
   updateConfig(config: {
@@ -122,9 +123,13 @@ class Tracker {
 
   private openSpan(winInfo: WinInfo): void {
     const candidate = this.buildCandidate(winInfo)
+    const url = candidate.domain ? browserBridge.getFreshTab()?.url ?? null : null
+    this.beginSpan(candidate, url)
+  }
+
+  private beginSpan(candidate: Candidate, url: string | null): void {
     const cls = classify(candidate, this.rules)
     const now = Date.now()
-    const url = candidate.domain ? browserBridge.getFreshTab()?.url ?? null : null
 
     const eventId = insertEvent({
       appName: candidate.appName,
@@ -155,6 +160,29 @@ class Tracker {
       this.distractedAccumSec = 0
       this.distractionNotified = false
     }
+  }
+
+  // Splits the open span when its rule classification changes so rule edits/deletes apply immediately.
+  private reclassifyActiveSpan(): void {
+    if (!this.tracking || this.afk || !this.span) {
+      return
+    }
+
+    const candidate: Candidate = {
+      appName: this.span.appName,
+      exePath: this.span.exePath,
+      windowTitle: this.span.windowTitle,
+      domain: this.span.domain
+    }
+    const cls = classify(candidate, this.rules)
+    if (cls.category === this.span.category && cls.thresholdSec === this.span.thresholdSec) {
+      return
+    }
+
+    const url = this.span.url
+    this.closeSpan(Date.now())
+    this.beginSpan(candidate, url)
+    this.emitStatus()
   }
 
   private flushSpan(endTs: number): void {

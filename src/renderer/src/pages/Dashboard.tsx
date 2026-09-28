@@ -37,8 +37,9 @@ export function Dashboard({
   const [liveSession, setLiveSession] = useState(status.activeSessionSec)
 
   useEffect(() => {
-    const r = rangeFromPreset(range)
     const load = (): void => {
+      // Rebuild the range each poll so the stream follows the current day past midnight.
+      const r = rangeFromPreset(range)
       window.api.getRecentEvents(r, 12).then(setEvents)
     }
 

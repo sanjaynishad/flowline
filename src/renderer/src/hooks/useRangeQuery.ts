@@ -16,9 +16,10 @@ export function useRangeQuery<T>(
 
   useEffect(() => {
     let mounted = true
-    const range = rangeFromPreset(preset)
 
     const run = (): void => {
+      // Recompute each poll so a session left open across midnight uses the current day.
+      const range = rangeFromPreset(preset)
       fetcherRef.current(range).then((res) => {
         if (mounted) {
           setData(res)

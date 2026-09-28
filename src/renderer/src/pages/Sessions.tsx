@@ -185,7 +185,7 @@ export function Sessions(): JSX.Element {
                   />
                 </div>
                 <span className="font-label-caps text-label-caps text-on-surface-variant">
-                  {new Date(d.day).toLocaleDateString([], { weekday: 'short' })}
+                  {new Date(`${d.day}T00:00:00`).toLocaleDateString([], { weekday: 'short' })}
                 </span>
               </div>
             )
