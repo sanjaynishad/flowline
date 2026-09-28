@@ -15,10 +15,19 @@ export function ThemeToggle(): JSX.Element {
   const current = OPTIONS.find((o) => o.value === mode) ?? OPTIONS[1]
 
   return (
-    <div className="relative">
+    <div
+      className="relative"
+      onBlur={(e) => {
+        // Only close when focus leaves the whole widget, so keyboard selection inside stays open.
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+          setOpen(false)
+        }
+      }}
+    >
       <button
         onClick={() => setOpen((v) => !v)}
-        onBlur={() => setTimeout(() => setOpen(false), 150)}
+        aria-haspopup="menu"
+        aria-expanded={open}
         className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high transition-all"
       >
         <Icon name={current.icon} size={18} className="text-primary" />
@@ -28,11 +37,16 @@ export function ThemeToggle(): JSX.Element {
         <Icon name="expand_more" size={16} className="text-on-surface-variant" />
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-40 rounded-xl bg-surface-container-lowest/95 backdrop-blur-xl border border-surface-variant/40 py-1.5 z-50 shadow-[0_8px_24px_rgba(0,0,0,0.6)]">
+        <div
+          role="menu"
+          className="absolute right-0 top-full mt-2 w-40 rounded-xl bg-surface-container-lowest/95 backdrop-blur-xl border border-surface-variant/40 py-1.5 z-50 shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
+        >
           {OPTIONS.map((o) => (
             <button
               key={o.value}
-              onMouseDown={() => {
+              role="menuitemradio"
+              aria-checked={o.value === mode}
+              onClick={() => {
                 setMode(o.value)
                 setOpen(false)
               }}

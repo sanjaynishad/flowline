@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { cloneElement, isValidElement, useEffect, useId, useState } from 'react'
 import type { Settings as SettingsType } from '@shared/types'
 import { Card } from '../components/Card'
 import { Icon } from '../components/Icon'
@@ -40,13 +40,26 @@ function Row({
   desc: string
   children: React.ReactNode
 }): JSX.Element {
+  const titleId = useId()
+  const descId = useId()
+  const control = isValidElement(children)
+    ? cloneElement(children as React.ReactElement, {
+        'aria-labelledby': titleId,
+        'aria-describedby': descId
+      })
+    : children
+
   return (
     <div className="flex items-center justify-between gap-4 py-3">
       <div>
-        <div className="font-body-md text-body-md font-semibold">{title}</div>
-        <div className="font-body-sm text-body-sm text-on-surface-variant">{desc}</div>
+        <div id={titleId} className="font-body-md text-body-md font-semibold">
+          {title}
+        </div>
+        <div id={descId} className="font-body-sm text-body-sm text-on-surface-variant">
+          {desc}
+        </div>
       </div>
-      <div className="flex-shrink-0">{children}</div>
+      <div className="flex-shrink-0">{control}</div>
     </div>
   )
 }

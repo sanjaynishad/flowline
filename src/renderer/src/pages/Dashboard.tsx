@@ -60,9 +60,11 @@ export function Dashboard({
 
   const totals = data?.totals ?? { productive: 0, neutral: 0, distracted: 0 }
   const totalSec = data?.totalTrackedSec ?? 0
+  const [exportOpen, setExportOpen] = useState(false)
 
-  async function handleExport(): Promise<void> {
-    await window.api.exportData(rangeFromPreset(range), 'csv')
+  async function handleExport(format: 'csv' | 'json'): Promise<void> {
+    setExportOpen(false)
+    await window.api.exportData(rangeFromPreset(range), format)
   }
 
   return (
@@ -85,13 +87,46 @@ export function Dashboard({
         </div>
         <div className="flex items-center gap-2">
           <RangeSelector value={range} onChange={onRangeChange} />
-          <button
-            onClick={handleExport}
-            className="flex items-center gap-1 px-2.5 py-2 rounded font-label-caps text-label-caps uppercase text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all"
+          <div
+            className="relative"
+            onBlur={(e) => {
+              if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+                setExportOpen(false)
+              }
+            }}
           >
-            <Icon name="file_download" size={16} />
-            Export
-          </button>
+            <button
+              onClick={() => setExportOpen((v) => !v)}
+              aria-haspopup="menu"
+              aria-expanded={exportOpen}
+              className="flex items-center gap-1 px-2.5 py-2 rounded font-label-caps text-label-caps uppercase text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all"
+            >
+              <Icon name="file_download" size={16} />
+              Export
+              <Icon name="expand_more" size={14} />
+            </button>
+            {exportOpen && (
+              <div
+                role="menu"
+                className="absolute right-0 top-full mt-2 w-36 rounded-xl bg-surface-container-lowest/95 backdrop-blur-xl border border-surface-variant/40 py-1.5 z-50 shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
+              >
+                <button
+                  role="menuitem"
+                  onClick={() => handleExport('csv')}
+                  className="flex items-center gap-2 w-full px-3 py-2 text-left font-body-sm text-body-sm hover:bg-surface-container-high transition-colors"
+                >
+                  <Icon name="table_view" size={16} /> CSV
+                </button>
+                <button
+                  role="menuitem"
+                  onClick={() => handleExport('json')}
+                  className="flex items-center gap-2 w-full px-3 py-2 text-left font-body-sm text-body-sm hover:bg-surface-container-high transition-colors"
+                >
+                  <Icon name="data_object" size={16} /> JSON
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

@@ -205,6 +205,7 @@ export function Rules(): JSX.Element {
                   <button
                     onClick={() => handleDelete(rule.id)}
                     className="p-1 rounded text-on-surface-variant hover:text-error hover:bg-surface-container transition-colors"
+                    aria-label={`Delete rule ${rule.matcher}`}
                     title="Delete rule"
                   >
                     <Icon name="delete" size={18} />

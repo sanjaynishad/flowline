@@ -9,6 +9,7 @@ export function Icon({
 }): JSX.Element {
   return (
     <span
+      aria-hidden="true"
       className={`material-symbols-outlined ${className}`}
       style={size ? { fontSize: `${size}px` } : undefined}
     >
