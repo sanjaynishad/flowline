@@ -15,7 +15,7 @@ import { useRangeQuery } from '../hooks/useRangeQuery'
 import { categoryLabel, categoryTextClass, formatDuration } from '../lib/format'
 import type { Category } from '@shared/types'
 
-function FluxTooltip({ active, payload, label }: any): JSX.Element | null {
+function FluxTooltip({ active, payload, label, multiDay }: any): JSX.Element | null {
   if (!active || !payload?.length) {
     return null
   }
@@ -23,7 +23,13 @@ function FluxTooltip({ active, payload, label }: any): JSX.Element | null {
   return (
     <div className="rounded-lg bg-surface-container-lowest/95 border border-surface-variant/40 px-3 py-2 shadow-lg">
       <div className="font-label-caps text-label-caps uppercase text-on-surface-variant mb-1">
-        {new Date(label).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        {multiDay
+          ? new Date(label).toLocaleString([], {
+              weekday: 'short',
+              hour: '2-digit',
+              minute: '2-digit'
+            })
+          : new Date(label).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
       </div>
       {payload.map((p: any) => (
         <div key={p.dataKey} className="font-code-data text-code-data flex items-center gap-2">
@@ -42,9 +48,12 @@ export function Insights({
   range: RangePreset
   onRangeChange: (r: RangePreset) => void
 }): JSX.Element {
-  const { data: timeline } = useRangeQuery<TimelinePoint[]>(range, (r) =>
-    window.api.getTimeline(r, 24)
-  )
+  // One bucket per hour so multi-day ranges stay hourly instead of collapsing into wide slots.
+  const multiDay = range !== 'today' && range !== 'yesterday'
+  const { data: timeline } = useRangeQuery<TimelinePoint[]>(range, (r) => {
+    const hours = Math.max(1, Math.round((r.end - r.start) / 3_600_000))
+    return window.api.getTimeline(r, Math.min(168, hours))
+  })
   const { data: apps } = useRangeQuery<AppUsage[]>(range, (r) => window.api.getAppMetrics(r, 40))
 
   const grouped: Record<Category, AppUsage[]> = { productive: [], neutral: [], distracted: [] }
@@ -99,8 +108,11 @@ export function Insights({
               <XAxis
                 dataKey="ts"
                 tickFormatter={(ts) =>
-                  new Date(ts).toLocaleTimeString([], { hour: '2-digit' })
+                  multiDay
+                    ? new Date(ts).toLocaleDateString([], { weekday: 'short' })
+                    : new Date(ts).toLocaleTimeString([], { hour: '2-digit' })
                 }
+                minTickGap={multiDay ? 24 : 8}
                 tick={{ fontSize: 10, fill: 'rgb(var(--md-on-surface-variant))' }}
                 stroke="rgb(var(--md-surface-variant))"
               />
@@ -108,7 +120,7 @@ export function Insights({
                 tick={{ fontSize: 10, fill: 'rgb(var(--md-on-surface-variant))' }}
                 stroke="rgb(var(--md-surface-variant))"
               />
-              <Tooltip content={<FluxTooltip />} />
+              <Tooltip content={<FluxTooltip multiDay={multiDay} />} />
               <Area
                 type="monotone"
                 dataKey="productive"

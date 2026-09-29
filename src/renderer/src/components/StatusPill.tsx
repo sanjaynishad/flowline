@@ -1,9 +1,21 @@
+import { useEffect, useState } from 'react'
 import { useLiveStatus } from '../hooks/useLiveStatus'
 import { formatClock } from '../lib/format'
 import { Icon } from './Icon'
 
 export function StatusPill(): JSX.Element {
   const status = useLiveStatus()
+  const [liveSec, setLiveSec] = useState(status.activeSessionSec)
+
+  useEffect(() => {
+    setLiveSec(status.activeSessionSec)
+    if (status.isAfk || !status.tracking) {
+      return
+    }
+
+    const id = setInterval(() => setLiveSec((s) => s + 1), 1000)
+    return () => clearInterval(id)
+  }, [status.activeSessionSec, status.isAfk, status.tracking])
 
   const state = !status.tracking
     ? { label: 'Paused', color: 'text-on-surface-variant', dot: 'bg-outline' }
@@ -35,7 +47,7 @@ export function StatusPill(): JSX.Element {
         </span>
         {status.current && !status.isAfk && (
           <span className="font-code-data text-code-data text-on-surface-variant hidden lg:inline">
-            {formatClock(status.activeSessionSec)} · {status.current.domain ?? status.current.appName}
+            {formatClock(liveSec)} · {status.current.domain ?? status.current.appName}
           </span>
         )}
       </div>

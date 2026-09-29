@@ -26,7 +26,7 @@ export function Sessions(): JSX.Element {
     window.api.getActiveSession().then((s) => {
       if (s) {
         setActive(s)
-        setRemaining(Math.max(0, Math.round((s.startTs + s.plannedMin * 60 * 1000 - Date.now()) / 1000)))
+        setRemaining(Math.max(0, Math.ceil((s.startTs + s.plannedMin * 60 * 1000 - Date.now()) / 1000)))
       }
     })
   }, [])
@@ -38,7 +38,8 @@ export function Sessions(): JSX.Element {
 
     const endAt = active.startTs + active.plannedMin * 60 * 1000
     const id = setInterval(() => {
-      const left = Math.round((endAt - Date.now()) / 1000)
+      // Ceil so completion is never inferred before the main-process deadline.
+      const left = Math.ceil((endAt - Date.now()) / 1000)
       setRemaining(left)
       if (left <= 0) {
         clearInterval(id)

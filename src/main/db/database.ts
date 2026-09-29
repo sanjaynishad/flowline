@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS activity_events (
   is_afk        INTEGER NOT NULL DEFAULT 0
 );
 CREATE INDEX IF NOT EXISTS idx_events_start ON activity_events(start_ts);
+CREATE INDEX IF NOT EXISTS idx_events_end ON activity_events(end_ts);
 CREATE INDEX IF NOT EXISTS idx_events_category ON activity_events(category);
 
 CREATE TABLE IF NOT EXISTS rules (
@@ -183,9 +184,10 @@ export function initDatabase(): Database.Database {
   db.exec(SCHEMA)
 
   seedSettings()
+  // seedGoals/seedSettings use INSERT OR IGNORE, so run every init to backfill pre-existing databases.
+  seedGoals()
   if (firstRun) {
     seedRules()
-    seedGoals()
     setSeedVersion(CURRENT_SEED_VERSION)
   } else if (getSeedVersion() < CURRENT_SEED_VERSION) {
     // Top up newly shipped default rules on existing installs, once per version.

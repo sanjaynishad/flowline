@@ -35,6 +35,11 @@ export function Dashboard({
   const { data } = useRangeQuery<DashboardSummary>(range, (r) => window.api.getDashboard(r))
   const [events, setEvents] = useState<ActivityEvent[]>([])
   const [liveSession, setLiveSession] = useState(status.activeSessionSec)
+  const [distractionLimitMin, setDistractionLimitMin] = useState<number | null>(null)
+
+  useEffect(() => {
+    window.api.getSettings().then((s) => setDistractionLimitMin(s.distractionLimitMin))
+  }, [])
 
   useEffect(() => {
     const load = (): void => {
@@ -61,6 +66,8 @@ export function Dashboard({
   const totals = data?.totals ?? { productive: 0, neutral: 0, distracted: 0 }
   const totalSec = data?.totalTrackedSec ?? 0
   const [exportOpen, setExportOpen] = useState(false)
+  const distractionLimitSec = (distractionLimitMin ?? 0) * 60
+  const overDistractionLimit = distractionLimitSec > 0 && totals.distracted >= distractionLimitSec
 
   async function handleExport(format: 'csv' | 'json'): Promise<void> {
     setExportOpen(false)
@@ -142,11 +149,19 @@ export function Dashboard({
           label="Distraction Time"
           value={formatDuration(totals.distracted)}
           suffix="off-task"
-          badge={totals.distracted > 0 ? 'flagged' : 'clean'}
+          badge={overDistractionLimit ? 'over limit' : totals.distracted > 0 ? 'flagged' : 'clean'}
           badgeTone="tertiary"
-          progress={percent(totals.distracted, totalSec)}
+          progress={
+            distractionLimitSec > 0
+              ? percent(totals.distracted, distractionLimitSec)
+              : percent(totals.distracted, totalSec)
+          }
           progressTone="tertiary"
-          footerLeft={`${percent(totals.distracted, totalSec)}% of tracked`}
+          footerLeft={
+            distractionLimitSec > 0
+              ? `${percent(totals.distracted, distractionLimitSec)}% of ${distractionLimitMin}m limit`
+              : `${percent(totals.distracted, totalSec)}% of tracked`
+          }
         />
         <StatTile
           label="Context Switches"
