@@ -54,7 +54,8 @@ export function Insights({
     const hours = Math.max(1, Math.round((r.end - r.start) / 3_600_000))
     return window.api.getTimeline(r, Math.min(168, hours))
   })
-  const { data: apps } = useRangeQuery<AppUsage[]>(range, (r) => window.api.getAppMetrics(r, 40))
+  // Fetch effectively all apps so the global top-N slice can't starve a category column.
+  const { data: apps } = useRangeQuery<AppUsage[]>(range, (r) => window.api.getAppMetrics(r, 500))
 
   const grouped: Record<Category, AppUsage[]> = { productive: [], neutral: [], distracted: [] }
   for (const a of apps ?? []) {

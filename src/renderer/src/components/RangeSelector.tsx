@@ -21,6 +21,7 @@ export function RangeSelector({
           <button
             key={o.id}
             onClick={() => onChange(o.id)}
+            aria-pressed={active}
             className={`px-3 py-1.5 rounded font-label-caps text-label-caps uppercase tracking-wider transition-all ${
               active
                 ? 'bg-primary-container text-on-primary-container shadow-[0_0_10px_rgba(0,240,118,0.3)]'

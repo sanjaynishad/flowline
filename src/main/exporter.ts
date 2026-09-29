@@ -16,7 +16,7 @@ function toCsv(rows: Record<string, unknown>[]): string {
       s = `'${s}`
     }
 
-    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
+    return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
   }
 
   const lines = [headers.join(',')]

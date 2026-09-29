@@ -48,16 +48,25 @@ export function addRule(input: {
   matchType: MatchType
   category: Category
   thresholdSec?: number | null
-}): Rule {
+}): Rule | null {
   const db = getDb()
+  const matcher = input.matcher.trim()
+  // Duplicates violate the unique index; report them instead of throwing an IPC error.
+  const existing = db
+    .prepare('SELECT id FROM rules WHERE matcher = ? AND match_type = ?')
+    .get(matcher, input.matchType)
+  if (existing) {
+    return null
+  }
+
   const info = db
     .prepare(
       'INSERT INTO rules (matcher, match_type, category, threshold_sec, created_at) VALUES (?, ?, ?, ?, ?)'
     )
-    .run(input.matcher.trim(), input.matchType, input.category, input.thresholdSec ?? null, Date.now())
+    .run(matcher, input.matchType, input.category, input.thresholdSec ?? null, Date.now())
   // Re-adding a rule clears any tombstone so future seed top-ups behave normally.
   db.prepare('DELETE FROM deleted_rules WHERE matcher = ? AND match_type = ?').run(
-    input.matcher.trim(),
+    matcher,
     input.matchType
   )
   const row = db.prepare('SELECT * FROM rules WHERE id = ?').get(info.lastInsertRowid) as RuleRow
@@ -271,7 +280,8 @@ export function getTimeline(range: DateRange, buckets = 24): TimelinePoint[] {
     const end = Math.min(s.end_ts, range.end)
     while (cur < end) {
       const idx = Math.min(buckets - 1, Math.floor((cur - range.start) / bucketMs))
-      const bucketEnd = range.start + (idx + 1) * bucketMs
+      // The final bucket absorbs the floored remainder so cur always reaches range.end.
+      const bucketEnd = idx === buckets - 1 ? range.end : range.start + (idx + 1) * bucketMs
       const segEnd = Math.min(end, bucketEnd)
       acc[idx][s.category] += (segEnd - cur) / 1000 / 60
       cur = segEnd

@@ -28,7 +28,7 @@ const api = {
     matchType: MatchType
     category: Category
     thresholdSec?: number | null
-  }): Promise<Rule> => ipcRenderer.invoke(IPC.rulesAdd, input),
+  }): Promise<Rule | null> => ipcRenderer.invoke(IPC.rulesAdd, input),
   updateRule: (
     id: number,
     patch: Partial<{ matcher: string; matchType: MatchType; category: Category; thresholdSec: number | null }>

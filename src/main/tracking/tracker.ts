@@ -39,7 +39,7 @@ class Tracker {
   private idleThresholdSec = 120
   private heartbeatSec = 20
   private distractionThresholdSec = 600
-  private distractedAccumSec = 0
+  private distractedSinceMs: number | null = null
   private distractionNotified = false
   private callbacks: TrackerCallbacks | null = null
 
@@ -156,8 +156,13 @@ class Tracker {
       startTs: now
     }
 
-    if (cls.category !== 'distracted') {
-      this.distractedAccumSec = 0
+    if (cls.category === 'distracted') {
+      // Preserve the streak start across consecutive distracted spans.
+      if (this.distractedSinceMs === null) {
+        this.distractedSinceMs = now
+      }
+    } else {
+      this.distractedSinceMs = null
       this.distractionNotified = false
     }
   }
@@ -291,7 +296,7 @@ class Tracker {
         const stoppedAt = Math.max(this.span?.startTs ?? now, now - idleSec * 1000)
         this.closeSpan(stoppedAt)
         this.afk = true
-        this.distractedAccumSec = 0
+        this.distractedSinceMs = null
         this.distractionNotified = false
       }
 
@@ -316,22 +321,26 @@ class Tracker {
     }
 
     this.flushSpan(now)
-    this.trackDistraction()
+    this.trackDistraction(now)
     this.emitStatus()
   }
 
-  private trackDistraction(): void {
+  private trackDistraction(now: number): void {
     if (!this.span || this.span.category !== 'distracted') {
       return
     }
 
-    this.distractedAccumSec += this.heartbeatSec
+    if (this.distractedSinceMs === null) {
+      this.distractedSinceMs = now
+    }
+
+    const elapsedSec = Math.round((now - this.distractedSinceMs) / 1000)
     const limit = this.span.thresholdSec ?? this.distractionThresholdSec
-    if (!this.distractionNotified && this.distractedAccumSec >= limit) {
+    if (!this.distractionNotified && elapsedSec >= limit) {
       this.distractionNotified = true
       this.callbacks?.onDistraction({
         label: this.span.domain ?? this.span.appName,
-        seconds: this.distractedAccumSec
+        seconds: elapsedSec
       })
     }
   }

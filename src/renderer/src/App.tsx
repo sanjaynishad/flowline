@@ -56,6 +56,7 @@ export default function App(): JSX.Element {
                 <button
                   key={item.id}
                   onClick={() => setPage(item.id)}
+                  aria-current={active ? 'page' : undefined}
                   className={`flex items-center gap-space-md px-space-md py-space-sm rounded transition-all text-left ${
                     active
                       ? 'bg-primary-container text-on-primary-container font-semibold shadow-[0_0_16px_rgba(0,240,118,0.2)]'

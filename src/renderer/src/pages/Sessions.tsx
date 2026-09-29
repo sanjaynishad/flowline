@@ -21,14 +21,23 @@ export function Sessions(): JSX.Element {
   }
 
   useEffect(() => {
-    reload()
-    // Restore a session already running in the main process (e.g. started from the tray).
-    window.api.getActiveSession().then((s) => {
-      if (s) {
-        setActive(s)
-        setRemaining(Math.max(0, Math.ceil((s.startTs + s.plannedMin * 60 * 1000 - Date.now()) / 1000)))
-      }
-    })
+    // Restore/resync a session running in the main process (e.g. started or replaced from the tray).
+    const sync = (): void => {
+      reload()
+      window.api.getActiveSession().then((s) => {
+        if (s) {
+          setActive(s)
+          setRemaining(Math.max(0, Math.ceil((s.startTs + s.plannedMin * 60 * 1000 - Date.now()) / 1000)))
+        } else {
+          setActive(null)
+          setRemaining(0)
+        }
+      })
+    }
+
+    sync()
+    window.addEventListener('focus', sync)
+    return () => window.removeEventListener('focus', sync)
   }, [])
 
   useEffect(() => {

@@ -18,6 +18,7 @@ export function Rules(): JSX.Element {
   const [matcher, setMatcher] = useState('')
   const [matchType, setMatchType] = useState<MatchType>('domain')
   const [category, setCategory] = useState<Category>('distracted')
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     window.api.listRules().then(setRules)
@@ -43,7 +44,13 @@ export function Rules(): JSX.Element {
       return
     }
 
-    await window.api.addRule({ matcher: value, matchType, category })
+    const created = await window.api.addRule({ matcher: value, matchType, category })
+    if (!created) {
+      setError('A rule with that matcher and type already exists.')
+      return
+    }
+
+    setError(null)
     setRules(await window.api.listRules())
     setMatcher('')
   }
@@ -91,7 +98,10 @@ export function Rules(): JSX.Element {
         <div className="flex flex-col md:flex-row gap-3">
           <input
             value={matcher}
-            onChange={(e) => setMatcher(e.target.value)}
+            onChange={(e) => {
+              setMatcher(e.target.value)
+              setError(null)
+            }}
             onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
             placeholder="e.g. reddit.com, Code.exe, invoice"
             className="flex-1 bg-surface-container-lowest text-on-surface placeholder:text-on-surface-variant/50 font-code-data text-code-data px-space-md py-2 rounded focus:outline-none focus:ring-1 focus:ring-primary transition-all"
@@ -126,6 +136,7 @@ export function Rules(): JSX.Element {
             Add
           </button>
         </div>
+        {error && <p className="mt-3 font-body-sm text-body-sm text-error">{error}</p>}
       </Card>
 
       <Card className="p-6 space-y-4">
@@ -135,6 +146,7 @@ export function Rules(): JSX.Element {
               <button
                 key={f}
                 onClick={() => setFilter(f)}
+                aria-pressed={filter === f}
                 className={`px-3 py-1.5 rounded font-label-caps text-label-caps uppercase tracking-wider transition-all ${
                   filter === f
                     ? 'bg-primary-container text-on-primary-container'

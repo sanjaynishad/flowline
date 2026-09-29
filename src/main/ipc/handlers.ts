@@ -55,7 +55,10 @@ export function registerIpcHandlers(deps: HandlerDeps): void {
     IPC.rulesAdd,
     (_e, input: { matcher: string; matchType: MatchType; category: Category; thresholdSec?: number | null }) => {
       const rule = addRule(input)
-      tracker.reloadRules()
+      if (rule) {
+        tracker.reloadRules()
+      }
+
       return rule
     }
   )
