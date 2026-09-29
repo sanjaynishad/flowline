@@ -2,9 +2,42 @@
 
 **See your focus. Stay in flow.**
 
+[![CI](https://github.com/sanjaynishad/flowline/actions/workflows/ci.yml/badge.svg)](https://github.com/sanjaynishad/flowline/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
+[![Platform: Windows](https://img.shields.io/badge/platform-Windows-0078D6.svg?logo=windows)](#getting-started)
+[![Built with Electron](https://img.shields.io/badge/Electron-2C2E3B.svg?logo=electron&logoColor=9FEAF9)](https://www.electronjs.org/)
+[![React](https://img.shields.io/badge/React-20232A.svg?logo=react&logoColor=61DAFB)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/sanjaynishad/flowline/pulls)
+[![GitHub stars](https://img.shields.io/github/stars/sanjaynishad/flowline?style=social)](https://github.com/sanjaynishad/flowline/stargazers)
+
 Flowline is a local-first desktop app that tracks how you spend time across Windows apps and browser tabs, then turns it into a live focus dashboard. It categorizes activity as **productive**, **neutral**, or **distracting**, detects idle time, nudges you when you drift, and includes Pomodoro sessions, daily goals, and streaks. A companion Chrome extension adds accurate per-site tracking. Built with Electron, React, and SQLite — **all your data stays on your device**.
 
 ![Flowline dashboard](docs/media/dashboard.png)
+
+## Contents
+
+- [Why Flowline](#why-flowline)
+- [Features](#features)
+- [How it works](#how-it-works)
+- [Tech stack](#tech-stack)
+- [Getting started](#getting-started)
+- [Browser extension](#browser-extension-optional-recommended)
+- [Configuration](#configuration)
+- [Project structure](#project-structure)
+- [Privacy](#privacy)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Why Flowline
+
+Most time trackers either upload your activity to the cloud or make you start and stop timers by hand. Flowline does neither. It runs quietly on your PC, figures out where your time actually goes, and keeps every byte on your machine.
+
+- **Local-first, private by design** — no account, no cloud, no telemetry. Unlike RescueTime or similar services, your activity never leaves your device.
+- **Zero manual timers** — Flowline tracks automatically in the background, so you don't have to remember to start anything.
+- **Real per-site accuracy** — the optional browser bridge attributes time to the exact domain (`youtube.com`, `github.com`), not a vague "Chrome" bucket.
+- **Actionable, not just pretty** — deep-work totals, distraction alerts, Pomodoro sessions, daily goals, and streaks are built to change behavior, not just chart it.
+- **Free and open source** — MIT-licensed and hackable; edit the categorization rules or the UI to fit how you work.
 
 ## Features
 
@@ -91,6 +124,14 @@ browser-extension/   Chrome (MV3) companion extension
 
 Flowline is **local-first**: all tracking data is stored in a SQLite file on your device and is never uploaded. The browser extension talks only to `localhost`.
 
+## Contributing
+
+Contributions are welcome! Bug reports, feature ideas, docs, and pull requests all help. See [CONTRIBUTING.md](CONTRIBUTING.md) to get started, and please review our [Code of Conduct](CODE_OF_CONDUCT.md). If you find a security issue, follow [SECURITY.md](SECURITY.md).
+
+If Flowline is useful to you, consider giving it a ⭐ — it genuinely helps others discover the project.
+
 ## License
 
-Intended for release under the **MIT License**. All runtime dependencies are MIT-licensed.
+Released under the [**MIT License**](LICENSE). All runtime dependencies are MIT-licensed.
+
+Built by [Sanjay Nishad](https://www.sanjaynishad.com/).

@@ -1,8 +1,44 @@
 {
   "name": "flowline",
   "version": "0.1.0",
-  "description": "Flowline — local-first app & browser focus tracker for Windows",
-  "author": "Flowline",
+  "description": "Flowline — local-first app & browser focus tracker for Windows. Automatic activity tracking, productivity categorization, Pomodoro sessions, goals and streaks. Your data never leaves your device.",
+  "author": {
+    "name": "Sanjay Nishad",
+    "url": "https://www.sanjaynishad.com/"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/sanjaynishad/flowline#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sanjaynishad/flowline.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sanjaynishad/flowline/issues"
+  },
+  "keywords": [
+    "focus",
+    "focus-tracker",
+    "time-tracking",
+    "productivity",
+    "productivity-tracker",
+    "activity-tracking",
+    "screen-time",
+    "deep-work",
+    "pomodoro",
+    "pomodoro-timer",
+    "distraction-blocker",
+    "self-tracking",
+    "rescuetime-alternative",
+    "local-first",
+    "privacy",
+    "electron",
+    "electron-app",
+    "desktop-app",
+    "react",
+    "typescript",
+    "sqlite",
+    "windows"
+  ],
   "main": "./out/main/index.js",
   "scripts": {
     "dev": "electron-vite dev",
