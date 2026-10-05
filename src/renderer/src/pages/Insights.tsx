@@ -15,8 +15,21 @@ import { useRangeQuery } from '../hooks/useRangeQuery'
 import { categoryLabel, categoryTextClass, formatDuration } from '../lib/format'
 import type { Category } from '@shared/types'
 
-function FluxTooltip({ active, payload, label, multiDay }: any): JSX.Element | null {
-  if (!active || !payload?.length) {
+interface FluxTooltipPayload {
+  dataKey: string
+  value: number
+  color: string
+}
+
+interface FluxTooltipProps {
+  active?: boolean
+  payload?: FluxTooltipPayload[]
+  label?: number
+  multiDay: boolean
+}
+
+function FluxTooltip({ active, payload, label, multiDay }: FluxTooltipProps): JSX.Element | null {
+  if (!active || !payload?.length || label === undefined) {
     return null
   }
 
@@ -31,7 +44,7 @@ function FluxTooltip({ active, payload, label, multiDay }: any): JSX.Element | n
             })
           : new Date(label).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
       </div>
-      {payload.map((p: any) => (
+      {payload.map((p) => (
         <div key={p.dataKey} className="font-code-data text-code-data flex items-center gap-2">
           <span className="w-2 h-2 rounded-full" style={{ background: p.color }} />
           {p.dataKey}: {p.value}m
@@ -97,15 +110,35 @@ export function Insights({
             <AreaChart data={timeline ?? []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="prodGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="rgb(var(--md-primary-container))" stopOpacity={0.5} />
-                  <stop offset="100%" stopColor="rgb(var(--md-primary-container))" stopOpacity={0} />
+                  <stop
+                    offset="0%"
+                    stopColor="rgb(var(--md-primary-container))"
+                    stopOpacity={0.5}
+                  />
+                  <stop
+                    offset="100%"
+                    stopColor="rgb(var(--md-primary-container))"
+                    stopOpacity={0}
+                  />
                 </linearGradient>
                 <linearGradient id="distGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="rgb(var(--md-tertiary-fixed-dim))" stopOpacity={0.4} />
-                  <stop offset="100%" stopColor="rgb(var(--md-tertiary-fixed-dim))" stopOpacity={0} />
+                  <stop
+                    offset="0%"
+                    stopColor="rgb(var(--md-tertiary-fixed-dim))"
+                    stopOpacity={0.4}
+                  />
+                  <stop
+                    offset="100%"
+                    stopColor="rgb(var(--md-tertiary-fixed-dim))"
+                    stopOpacity={0}
+                  />
                 </linearGradient>
               </defs>
-              <CartesianGrid stroke="rgb(var(--md-surface-variant))" strokeOpacity={0.3} vertical={false} />
+              <CartesianGrid
+                stroke="rgb(var(--md-surface-variant))"
+                strokeOpacity={0.3}
+                vertical={false}
+              />
               <XAxis
                 dataKey="ts"
                 tickFormatter={(ts) =>
@@ -151,7 +184,9 @@ export function Insights({
             <div key={key} className="rounded-lg bg-surface-container/50 p-4">
               <div className="flex items-center gap-2 mb-3">
                 <Icon name={icon} size={18} className={categoryTextClass[key]} />
-                <span className={`font-label-caps text-label-caps uppercase tracking-wider ${categoryTextClass[key]}`}>
+                <span
+                  className={`font-label-caps text-label-caps uppercase tracking-wider ${categoryTextClass[key]}`}
+                >
                   {categoryLabel[key]}
                 </span>
               </div>

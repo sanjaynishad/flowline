@@ -50,8 +50,12 @@ export function StatTile({
         )}
       </div>
       <div className="my-3 flex items-baseline gap-2">
-        <span className="font-code-metric-lg text-code-metric-lg font-bold tracking-tight">{value}</span>
-        {suffix && <span className="font-body-sm text-body-sm text-on-surface-variant">{suffix}</span>}
+        <span className="font-code-metric-lg text-code-metric-lg font-bold tracking-tight">
+          {value}
+        </span>
+        {suffix && (
+          <span className="font-body-sm text-body-sm text-on-surface-variant">{suffix}</span>
+        )}
       </div>
       <div className="space-y-1.5">
         {progress !== undefined && (

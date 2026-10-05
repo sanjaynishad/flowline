@@ -71,15 +71,33 @@ module.exports = {
         mono: ['"JetBrains Mono"', 'monospace']
       },
       fontSize: {
-        'display-lg': ['40px', { lineHeight: '48px', letterSpacing: '-0.025em', fontWeight: '700' }],
-        'headline-xl': ['30px', { lineHeight: '38px', letterSpacing: '-0.02em', fontWeight: '600' }],
-        'headline-lg': ['24px', { lineHeight: '32px', letterSpacing: '-0.015em', fontWeight: '600' }],
-        'headline-md': ['18px', { lineHeight: '24px', letterSpacing: '-0.01em', fontWeight: '600' }],
+        'display-lg': [
+          '40px',
+          { lineHeight: '48px', letterSpacing: '-0.025em', fontWeight: '700' }
+        ],
+        'headline-xl': [
+          '30px',
+          { lineHeight: '38px', letterSpacing: '-0.02em', fontWeight: '600' }
+        ],
+        'headline-lg': [
+          '24px',
+          { lineHeight: '32px', letterSpacing: '-0.015em', fontWeight: '600' }
+        ],
+        'headline-md': [
+          '18px',
+          { lineHeight: '24px', letterSpacing: '-0.01em', fontWeight: '600' }
+        ],
         'body-lg': ['15px', { lineHeight: '22px', letterSpacing: '0em' }],
         'body-md': ['13px', { lineHeight: '18px', letterSpacing: '0.005em' }],
         'body-sm': ['11px', { lineHeight: '16px', letterSpacing: '0.01em' }],
-        'code-metric-lg': ['28px', { lineHeight: '32px', letterSpacing: '-0.03em', fontWeight: '600' }],
-        'code-metric-md': ['18px', { lineHeight: '22px', letterSpacing: '-0.02em', fontWeight: '500' }],
+        'code-metric-lg': [
+          '28px',
+          { lineHeight: '32px', letterSpacing: '-0.03em', fontWeight: '600' }
+        ],
+        'code-metric-md': [
+          '18px',
+          { lineHeight: '22px', letterSpacing: '-0.02em', fontWeight: '500' }
+        ],
         'code-data': ['12px', { lineHeight: '16px', letterSpacing: '0em' }],
         'label-caps': ['10px', { lineHeight: '12px', letterSpacing: '0.08em', fontWeight: '600' }]
       },

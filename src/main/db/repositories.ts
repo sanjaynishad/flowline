@@ -83,7 +83,9 @@ export function updateRule(
   }
 
   getDb()
-    .prepare('UPDATE rules SET matcher = ?, match_type = ?, category = ?, threshold_sec = ? WHERE id = ?')
+    .prepare(
+      'UPDATE rules SET matcher = ?, match_type = ?, category = ?, threshold_sec = ? WHERE id = ?'
+    )
     .run(
       patch.matcher ?? current.matcher,
       patch.matchType ?? current.match_type,
@@ -96,8 +98,7 @@ export function updateRule(
 export function deleteRule(id: number): void {
   const db = getDb()
   const row = db.prepare('SELECT matcher, match_type FROM rules WHERE id = ?').get(id) as
-    | { matcher: string; match_type: MatchType }
-    | undefined
+    { matcher: string; match_type: MatchType } | undefined
   db.prepare('DELETE FROM rules WHERE id = ?').run(id)
   // Tombstone the deletion so a seed-version top-up can't recreate a removed default.
   if (row) {
@@ -203,14 +204,22 @@ function categoryTotals(range: DateRange): CategoryTotals {
 
 export function getTopApps(range: DateRange, limit = 5): AppUsage[] {
   const spans = overlappingSpans(range)
-  const byLabel = new Map<string, { label: string; domain: string | null; category: Category; sec: number }>()
+  const byLabel = new Map<
+    string,
+    { label: string; domain: string | null; category: Category; sec: number }
+  >()
   let grand = 0
 
   for (const s of spans) {
     const sec = clippedSec(s, range)
     grand += sec
     const key = `${s.label}|${s.category}`
-    const entry = byLabel.get(key) ?? { label: s.label, domain: s.domain, category: s.category, sec: 0 }
+    const entry = byLabel.get(key) ?? {
+      label: s.label,
+      domain: s.domain,
+      category: s.category,
+      sec: 0
+    }
     entry.sec += sec
     byLabel.set(key, entry)
   }
@@ -305,9 +314,9 @@ export function getRecentEvents(range: DateRange, limit?: number): ActivityEvent
        WHERE start_ts < ? AND end_ts > ?
        ORDER BY start_ts DESC`
   const stmt = getDb().prepare(limit === undefined ? base : `${base} LIMIT ?`)
-  const rows = (limit === undefined
-    ? stmt.all(range.end, range.start)
-    : stmt.all(range.end, range.start, limit)) as Array<{
+  const rows = (
+    limit === undefined ? stmt.all(range.end, range.start) : stmt.all(range.end, range.start, limit)
+  ) as Array<{
     id: number
     app_name: string
     exe_path: string | null
@@ -366,11 +375,13 @@ export function getDailyTotals(range: DateRange): DailyTotal[] {
 }
 
 export function getDeepWorkStreak(targetMin: number): number {
+  // The streak loop only ever looks back 366 days, so ignore older events to keep this bounded.
+  const since = Date.now() - 367 * 24 * 60 * 60 * 1000
   const rows = getDb()
     .prepare(
-      `SELECT start_ts, end_ts FROM activity_events WHERE is_afk = 0 AND category = 'productive'`
+      `SELECT start_ts, end_ts FROM activity_events WHERE is_afk = 0 AND category = 'productive' AND end_ts > ?`
     )
-    .all() as { start_ts: number; end_ts: number }[]
+    .all(since) as { start_ts: number; end_ts: number }[]
 
   const perDay = new Map<string, number>()
   for (const r of rows) {
@@ -414,7 +425,9 @@ function toLocalDateKey(d: Date): string {
 
 export function startSession(plannedMin: number, type: 'focus' | 'break'): number {
   const info = getDb()
-    .prepare('INSERT INTO focus_sessions (start_ts, planned_min, type, completed) VALUES (?, ?, ?, 0)')
+    .prepare(
+      'INSERT INTO focus_sessions (start_ts, planned_min, type, completed) VALUES (?, ?, ?, 0)'
+    )
     .run(Date.now(), plannedMin, type)
   return Number(info.lastInsertRowid)
 }

@@ -48,7 +48,9 @@ export async function exportData(
   }
 
   const content =
-    format === 'csv' ? toCsv(events as unknown as Record<string, unknown>[]) : JSON.stringify(events, null, 2)
+    format === 'csv'
+      ? toCsv(events as unknown as Record<string, unknown>[])
+      : JSON.stringify(events, null, 2)
   writeFileSync(result.filePath, content, 'utf-8')
 
   return { ok: true, path: result.filePath }

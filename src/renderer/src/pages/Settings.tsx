@@ -119,7 +119,9 @@ export function Settings(): JSX.Element {
             max={60}
             className={numberInput}
             value={settings.heartbeatSec}
-            onChange={(e) => save({ heartbeatSec: Math.min(60, Math.max(5, Number(e.target.value))) })}
+            onChange={(e) =>
+              save({ heartbeatSec: Math.min(60, Math.max(5, Number(e.target.value))) })
+            }
           />
         </Row>
         <Row title="Distraction alert" desc="Notify after this many continuous minutes off-task">
@@ -139,7 +141,10 @@ export function Settings(): JSX.Element {
             Goals
           </span>
         </div>
-        <Row title="Deep work target" desc="Daily productive-time goal (minutes) — drives your streak">
+        <Row
+          title="Deep work target"
+          desc="Daily productive-time goal (minutes) — drives your streak"
+        >
           <input
             type="number"
             min={0}
@@ -190,7 +195,8 @@ export function Settings(): JSX.Element {
         </p>
         <ol className="font-body-sm text-body-sm text-on-surface-variant space-y-1.5 list-decimal list-inside">
           <li>
-            Open <span className="font-code-data">chrome://extensions</span> and enable Developer mode.
+            Open <span className="font-code-data">chrome://extensions</span> and enable Developer
+            mode.
           </li>
           <li>
             Click <strong>Load unpacked</strong> and select the{' '}

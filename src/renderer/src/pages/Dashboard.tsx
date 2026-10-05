@@ -82,7 +82,9 @@ export function Dashboard({
             <Icon name="sensors" size={20} />
           </div>
           <div>
-            <h1 className="font-headline-lg text-headline-lg tracking-tight font-bold">Live Overview</h1>
+            <h1 className="font-headline-lg text-headline-lg tracking-tight font-bold">
+              Live Overview
+            </h1>
             <p className="font-body-sm text-body-sm text-on-surface-variant">
               {status.tracking
                 ? status.isAfk
@@ -211,11 +213,15 @@ export function Dashboard({
                       <div className="font-body-md text-body-md font-semibold">
                         {categoryLabel[key]}
                       </div>
-                      <div className="font-label-caps text-label-caps text-on-surface-variant">{sub}</div>
+                      <div className="font-label-caps text-label-caps text-on-surface-variant">
+                        {sub}
+                      </div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className={`font-code-metric-md text-code-metric-md font-bold ${categoryTextClass[key]}`}>
+                    <div
+                      className={`font-code-metric-md text-code-metric-md font-bold ${categoryTextClass[key]}`}
+                    >
                       {formatDuration(totals[key])}
                     </div>
                     <div className="font-label-caps text-label-caps text-on-surface-variant">
@@ -235,7 +241,10 @@ export function Dashboard({
           </div>
           <div className="space-y-3.5">
             {(data?.topApps ?? []).map((app, i) => (
-              <div key={i} className="p-2.5 rounded-lg hover:bg-surface-container-high transition-colors">
+              <div
+                key={i}
+                className="p-2.5 rounded-lg hover:bg-surface-container-high transition-colors"
+              >
                 <div className="flex items-center justify-between mb-1.5">
                   <div className="flex items-center gap-2.5 min-w-0">
                     <div className="w-6 h-6 rounded bg-surface-container flex items-center justify-center flex-shrink-0">
@@ -245,9 +254,13 @@ export function Dashboard({
                         className={categoryTextClass[app.category]}
                       />
                     </div>
-                    <div className="font-code-data text-code-data font-semibold truncate">{app.appName}</div>
+                    <div className="font-code-data text-code-data font-semibold truncate">
+                      {app.appName}
+                    </div>
                   </div>
-                  <div className={`font-code-metric-md text-code-metric-md font-bold ml-2 flex-shrink-0 ${categoryTextClass[app.category]}`}>
+                  <div
+                    className={`font-code-metric-md text-code-metric-md font-bold ml-2 flex-shrink-0 ${categoryTextClass[app.category]}`}
+                  >
                     {formatDuration(app.durationSec)}
                   </div>
                 </div>

@@ -123,7 +123,7 @@ class Tracker {
 
   private openSpan(winInfo: WinInfo): void {
     const candidate = this.buildCandidate(winInfo)
-    const url = candidate.domain ? browserBridge.getFreshTab()?.url ?? null : null
+    const url = candidate.domain ? (browserBridge.getFreshTab()?.url ?? null) : null
     this.beginSpan(candidate, url)
   }
 

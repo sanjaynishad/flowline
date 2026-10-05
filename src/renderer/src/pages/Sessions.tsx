@@ -27,7 +27,9 @@ export function Sessions(): JSX.Element {
       window.api.getActiveSession().then((s) => {
         if (s) {
           setActive(s)
-          setRemaining(Math.max(0, Math.ceil((s.startTs + s.plannedMin * 60 * 1000 - Date.now()) / 1000)))
+          setRemaining(
+            Math.max(0, Math.ceil((s.startTs + s.plannedMin * 60 * 1000 - Date.now()) / 1000))
+          )
         } else {
           setActive(null)
           setRemaining(0)
@@ -83,7 +85,9 @@ export function Sessions(): JSX.Element {
           <Icon name="timer" size={20} />
         </div>
         <div>
-          <h1 className="font-headline-lg text-headline-lg tracking-tight font-bold">Focus Sessions</h1>
+          <h1 className="font-headline-lg text-headline-lg tracking-tight font-bold">
+            Focus Sessions
+          </h1>
           <p className="font-body-sm text-body-sm text-on-surface-variant">
             Time-boxed focus blocks with break reminders
           </p>

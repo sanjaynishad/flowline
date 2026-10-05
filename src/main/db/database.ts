@@ -200,8 +200,7 @@ export function initDatabase(): Database.Database {
 
 function getSeedVersion(): number {
   const row = db.prepare('SELECT value FROM settings WHERE key = ?').get('seedVersion') as
-    | { value: string }
-    | undefined
+    { value: string } | undefined
   return row ? Number(row.value) : 0
 }
 

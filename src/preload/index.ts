@@ -31,7 +31,12 @@ const api = {
   }): Promise<Rule | null> => ipcRenderer.invoke(IPC.rulesAdd, input),
   updateRule: (
     id: number,
-    patch: Partial<{ matcher: string; matchType: MatchType; category: Category; thresholdSec: number | null }>
+    patch: Partial<{
+      matcher: string
+      matchType: MatchType
+      category: Category
+      thresholdSec: number | null
+    }>
   ): Promise<Rule[]> => ipcRenderer.invoke(IPC.rulesUpdate, id, patch),
   deleteRule: (id: number): Promise<Rule[]> => ipcRenderer.invoke(IPC.rulesDelete, id),
 

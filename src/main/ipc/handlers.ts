@@ -53,7 +53,15 @@ export function registerIpcHandlers(deps: HandlerDeps): void {
 
   ipcMain.handle(
     IPC.rulesAdd,
-    (_e, input: { matcher: string; matchType: MatchType; category: Category; thresholdSec?: number | null }) => {
+    (
+      _e,
+      input: {
+        matcher: string
+        matchType: MatchType
+        category: Category
+        thresholdSec?: number | null
+      }
+    ) => {
       const rule = addRule(input)
       if (rule) {
         tracker.reloadRules()
@@ -63,11 +71,23 @@ export function registerIpcHandlers(deps: HandlerDeps): void {
     }
   )
 
-  ipcMain.handle(IPC.rulesUpdate, (_e, id: number, patch: Partial<{ matcher: string; matchType: MatchType; category: Category; thresholdSec: number | null }>) => {
-    updateRule(id, patch)
-    tracker.reloadRules()
-    return getRules()
-  })
+  ipcMain.handle(
+    IPC.rulesUpdate,
+    (
+      _e,
+      id: number,
+      patch: Partial<{
+        matcher: string
+        matchType: MatchType
+        category: Category
+        thresholdSec: number | null
+      }>
+    ) => {
+      updateRule(id, patch)
+      tracker.reloadRules()
+      return getRules()
+    }
+  )
 
   ipcMain.handle(IPC.rulesDelete, (_e, id: number) => {
     deleteRule(id)

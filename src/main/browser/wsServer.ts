@@ -11,9 +11,7 @@ export interface BrowserTab {
 const FRESHNESS_MS = 5000
 
 // Extension ID derived from the pinned public key in browser-extension/manifest.json.
-const ALLOWED_ORIGINS = new Set([
-  'chrome-extension://jcoofjgacfkefbpbkeecocghleheinpa'
-])
+const ALLOWED_ORIGINS = new Set(['chrome-extension://jcoofjgacfkefbpbkeecocghleheinpa'])
 
 class BrowserBridge {
   private wss: WebSocketServer | null = null

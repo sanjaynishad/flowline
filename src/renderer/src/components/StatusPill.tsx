@@ -38,11 +38,15 @@ export function StatusPill(): JSX.Element {
       <div className="flex items-center gap-2 px-2.5 py-1 rounded bg-surface-container">
         <span className={`relative flex h-2 w-2`}>
           {!status.isAfk && status.tracking && (
-            <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${state.dot} opacity-75`} />
+            <span
+              className={`animate-ping absolute inline-flex h-full w-full rounded-full ${state.dot} opacity-75`}
+            />
           )}
           <span className={`relative inline-flex rounded-full h-2 w-2 ${state.dot}`} />
         </span>
-        <span className={`font-label-caps text-label-caps uppercase tracking-wider font-semibold ${state.color}`}>
+        <span
+          className={`font-label-caps text-label-caps uppercase tracking-wider font-semibold ${state.color}`}
+        >
           {state.label}
         </span>
         {status.current && !status.isAfk && (

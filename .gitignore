@@ -7,3 +7,4 @@ flowline.db
 flowline.db-*
 .vite/
 .tmp/
+.eslintcache
