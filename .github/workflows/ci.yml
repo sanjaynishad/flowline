@@ -7,8 +7,8 @@ on:
     branches: [main]
 
 jobs:
-  typecheck:
-    name: Type check
+  verify:
+    name: Verify
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -23,5 +23,14 @@ jobs:
       - name: Install dependencies
         run: npm install --ignore-scripts
 
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Lint
+        run: npm run lint
+
       - name: Type check
         run: npm run typecheck
+
+      - name: Build
+        run: npm run build
