@@ -2,14 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import type { Category, MatchType, Rule } from '@shared/types'
 import { Card } from '../components/Card'
 import { Icon } from '../components/Icon'
-import { categoryLabel, categoryTextClass } from '../lib/format'
-
-const CATEGORIES: Category[] = ['productive', 'neutral', 'distracted']
-const MATCH_TYPES: { value: MatchType; label: string }[] = [
-  { value: 'exe', label: 'App (.exe)' },
-  { value: 'domain', label: 'Domain' },
-  { value: 'title', label: 'Title keyword' }
-]
+import { CATEGORIES, MATCH_TYPES, categoryLabel, categoryTextClass } from '../lib/format'
 
 export function Rules(): JSX.Element {
   const [rules, setRules] = useState<Rule[]>([])

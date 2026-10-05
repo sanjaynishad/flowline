@@ -1,4 +1,12 @@
-import type { Category } from '@shared/types'
+import type { Category, MatchType } from '@shared/types'
+
+export const CATEGORIES: Category[] = ['productive', 'neutral', 'distracted']
+
+export const MATCH_TYPES: { value: MatchType; label: string }[] = [
+  { value: 'exe', label: 'App (.exe)' },
+  { value: 'domain', label: 'Domain' },
+  { value: 'title', label: 'Title keyword' }
+]
 
 export function formatDuration(totalSec: number): string {
   const s = Math.max(0, Math.round(totalSec))
