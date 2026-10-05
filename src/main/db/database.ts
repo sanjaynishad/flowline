@@ -158,7 +158,7 @@ const DEFAULT_SETTINGS: Record<string, string> = {
   idleThresholdSec: '120',
   heartbeatSec: '20',
   distractionThresholdSec: '600',
-  theme: 'dark',
+  theme: 'system',
   autostart: 'false',
   wsPort: '7413',
   notificationsEnabled: 'true',

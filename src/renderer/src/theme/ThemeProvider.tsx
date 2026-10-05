@@ -7,7 +7,7 @@ interface ThemeContextValue {
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
-  mode: 'dark',
+  mode: 'system',
   setMode: () => {}
 })
 
@@ -27,7 +27,7 @@ function apply(mode: ThemeMode): void {
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }): JSX.Element {
-  const [mode, setModeState] = useState<ThemeMode>('dark')
+  const [mode, setModeState] = useState<ThemeMode>('system')
 
   useEffect(() => {
     window.api.getSettings().then((s) => {
