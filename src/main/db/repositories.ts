@@ -160,11 +160,14 @@ const RECATEGORIZE_BATCH = 1000
 export async function recategorizeAllEvents(): Promise<number> {
   const db = getDb()
   const rules = getRules()
-  const rows = db
-    .prepare(
-      'SELECT id, app_name, exe_path, window_title, domain, category FROM activity_events WHERE is_afk = 0'
-    )
-    .all() as EventClassRow[]
+  // Page by an ordered id cursor so only one batch is held in memory at a time.
+  const selectBatch = db.prepare(
+    `SELECT id, app_name, exe_path, window_title, domain, category
+     FROM activity_events
+     WHERE is_afk = 0 AND id > ?
+     ORDER BY id
+     LIMIT ?`
+  )
   const update = db.prepare('UPDATE activity_events SET category = ? WHERE id = ?')
 
   const applyBatch = db.transaction((items: EventClassRow[]) => {
@@ -187,8 +190,15 @@ export async function recategorizeAllEvents(): Promise<number> {
   })
 
   let changed = 0
-  for (let i = 0; i < rows.length; i += RECATEGORIZE_BATCH) {
-    changed += applyBatch(rows.slice(i, i + RECATEGORIZE_BATCH))
+  let cursor = 0
+  for (;;) {
+    const batch = selectBatch.all(cursor, RECATEGORIZE_BATCH) as EventClassRow[]
+    if (batch.length === 0) {
+      break
+    }
+
+    changed += applyBatch(batch)
+    cursor = batch[batch.length - 1].id
     await new Promise<void>((resolve) => setImmediate(resolve))
   }
 
