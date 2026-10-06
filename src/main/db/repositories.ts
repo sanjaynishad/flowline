@@ -153,8 +153,11 @@ interface EventClassRow {
   category: Category
 }
 
-// Reclassify every stored event against the current rule set; call only on rule changes.
-export function recategorizeAllEvents(): number {
+// Process events in batches, yielding between them so a large history can't freeze the main thread.
+const RECATEGORIZE_BATCH = 1000
+
+// Reclassify stored events against the current rule set in chunks; call only on rule changes.
+export async function recategorizeAllEvents(): Promise<number> {
   const db = getDb()
   const rules = getRules()
   const rows = db
@@ -164,7 +167,7 @@ export function recategorizeAllEvents(): number {
     .all() as EventClassRow[]
   const update = db.prepare('UPDATE activity_events SET category = ? WHERE id = ?')
 
-  const run = db.transaction((items: EventClassRow[]) => {
+  const applyBatch = db.transaction((items: EventClassRow[]) => {
     let changed = 0
     for (const row of items) {
       const candidate: Candidate = {
@@ -183,7 +186,38 @@ export function recategorizeAllEvents(): number {
     return changed
   })
 
-  return run(rows)
+  let changed = 0
+  for (let i = 0; i < rows.length; i += RECATEGORIZE_BATCH) {
+    changed += applyBatch(rows.slice(i, i + RECATEGORIZE_BATCH))
+    await new Promise<void>((resolve) => setImmediate(resolve))
+  }
+
+  return changed
+}
+
+let recategorizeRunning = false
+let recategorizePending = false
+
+// Coalesces bursts of rule edits into a single background pass so full scans don't stack up.
+export function scheduleRecategorize(): void {
+  if (recategorizeRunning) {
+    recategorizePending = true
+    return
+  }
+
+  recategorizeRunning = true
+  void (async () => {
+    try {
+      do {
+        recategorizePending = false
+        await recategorizeAllEvents()
+      } while (recategorizePending)
+    } catch (err) {
+      console.error('[rules] recategorize failed:', err)
+    } finally {
+      recategorizeRunning = false
+    }
+  })()
 }
 
 // ---------- Aggregates ----------
