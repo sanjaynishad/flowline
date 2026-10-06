@@ -13,6 +13,7 @@ import {
   getRules,
   getSettings,
   getTimeline,
+  recategorizeAllEvents,
   setGoal,
   setSettings,
   updateRule
@@ -64,6 +65,7 @@ export function registerIpcHandlers(deps: HandlerDeps): void {
     ) => {
       const rule = addRule(input)
       if (rule) {
+        recategorizeAllEvents()
         tracker.reloadRules()
       }
 
@@ -84,6 +86,7 @@ export function registerIpcHandlers(deps: HandlerDeps): void {
       }>
     ) => {
       updateRule(id, patch)
+      recategorizeAllEvents()
       tracker.reloadRules()
       return getRules()
     }
@@ -91,6 +94,7 @@ export function registerIpcHandlers(deps: HandlerDeps): void {
 
   ipcMain.handle(IPC.rulesDelete, (_e, id: number) => {
     deleteRule(id)
+    recategorizeAllEvents()
     tracker.reloadRules()
     return getRules()
   })

@@ -1,4 +1,5 @@
 import { getDb } from './database'
+import { classify, type Candidate } from '../tracking/categorizer'
 import type {
   ActivityEvent,
   AppUsage,
@@ -141,6 +142,48 @@ export function updateEventEnd(id: number, endTs: number, durationSec: number): 
 
 export function deleteEmptyEvent(id: number): void {
   getDb().prepare('DELETE FROM activity_events WHERE id = ? AND duration_sec = 0').run(id)
+}
+
+interface EventClassRow {
+  id: number
+  app_name: string
+  exe_path: string | null
+  window_title: string | null
+  domain: string | null
+  category: Category
+}
+
+// Reclassify every stored event against the current rule set; call only on rule changes.
+export function recategorizeAllEvents(): number {
+  const db = getDb()
+  const rules = getRules()
+  const rows = db
+    .prepare(
+      'SELECT id, app_name, exe_path, window_title, domain, category FROM activity_events WHERE is_afk = 0'
+    )
+    .all() as EventClassRow[]
+  const update = db.prepare('UPDATE activity_events SET category = ? WHERE id = ?')
+
+  const run = db.transaction((items: EventClassRow[]) => {
+    let changed = 0
+    for (const row of items) {
+      const candidate: Candidate = {
+        appName: row.app_name,
+        exePath: row.exe_path,
+        windowTitle: row.window_title,
+        domain: row.domain
+      }
+      const next = classify(candidate, rules).category
+      if (next !== row.category) {
+        update.run(next, row.id)
+        changed += 1
+      }
+    }
+
+    return changed
+  })
+
+  return run(rows)
 }
 
 // ---------- Aggregates ----------
