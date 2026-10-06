@@ -63,15 +63,21 @@ class BrowserBridge {
 
   private handleMessage(ws: WebSocket, text: string): void {
     try {
-      const msg = JSON.parse(text) as { url?: string; title?: string; focused?: boolean }
-      if (msg.focused === false) {
+      const msg = JSON.parse(text) as unknown
+      if (typeof msg !== 'object' || msg === null) {
+        return
+      }
+
+      const frame = msg as { url?: unknown; title?: unknown; focused?: unknown }
+      if (frame.focused === false) {
         this.latestByClient.delete(ws)
       } else {
-        const url = msg.url ?? null
+        const url = typeof frame.url === 'string' ? frame.url : null
+        const title = typeof frame.title === 'string' ? frame.title : null
         this.latestByClient.set(ws, {
           url,
           domain: extractDomain(url),
-          title: msg.title ?? null,
+          title,
           receivedAt: Date.now()
         })
       }
