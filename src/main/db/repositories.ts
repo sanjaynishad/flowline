@@ -354,6 +354,13 @@ export function getRecentEvents(range: DateRange, limit?: number): ActivityEvent
 export function getDailyTotals(range: DateRange): DailyTotal[] {
   const map = new Map<string, DailyTotal>()
 
+  // Seed every local day in the range so zero-activity days still render.
+  forEachLocalDaySegment(range.start, range.end, (day) => {
+    if (!map.has(day)) {
+      map.set(day, { day, productive: 0, neutral: 0, distracted: 0 })
+    }
+  })
+
   for (const s of overlappingSpans(range)) {
     const start = Math.max(s.start_ts, range.start)
     const end = Math.min(s.end_ts, range.end)

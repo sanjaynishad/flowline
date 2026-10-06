@@ -118,7 +118,7 @@ class Tracker {
   }
 
   private candidateKey(c: Candidate): string {
-    return `${c.exePath ?? c.appName}|${c.domain ?? c.windowTitle ?? ''}`
+    return `${c.exePath ?? c.appName}|${c.domain ?? ''}|${c.windowTitle ?? ''}`
   }
 
   private openSpan(winInfo: WinInfo): void {
@@ -244,7 +244,7 @@ class Tracker {
       return ''
     }
 
-    return `${this.span.exePath ?? this.span.appName}|${this.span.domain ?? this.span.windowTitle ?? ''}`
+    return `${this.span.exePath ?? this.span.appName}|${this.span.domain ?? ''}|${this.span.windowTitle ?? ''}`
   }
 
   // Returns null when the OS temporarily can't report a foreground window (lock screen, secure desktop, etc.).

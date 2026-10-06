@@ -59,12 +59,14 @@ class SessionManager {
       return
     }
 
+    const { id, type } = this.active
     clearTimeout(this.active.timer)
-    endSession(this.active.id, false)
+    endSession(id, false)
     this.active = null
 
     if (userInitiated && this.notifyEnabled) {
-      notify('Session stopped', 'Focus session ended early.')
+      const label = type === 'break' ? 'Break' : 'Focus session'
+      notify('Session stopped', `${label} ended early.`)
     }
   }
 

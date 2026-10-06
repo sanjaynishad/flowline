@@ -132,6 +132,6 @@ If Flowline is useful to you, consider giving it a ⭐ — it genuinely helps ot
 
 ## License
 
-Released under the [**MIT License**](LICENSE). All runtime dependencies are MIT-licensed.
+Released under the [**MIT License**](LICENSE). Bundled fonts (Inter and JetBrains Mono via Fontsource) are licensed under the SIL Open Font License 1.1, and the Material Symbols icons are licensed under Apache-2.0.
 
 Built by [Sanjay Nishad](https://www.sanjaynishad.com/).

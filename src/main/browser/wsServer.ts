@@ -15,7 +15,7 @@ const ALLOWED_ORIGINS = new Set(['chrome-extension://jcoofjgacfkefbpbkeecocghleh
 
 class BrowserBridge {
   private wss: WebSocketServer | null = null
-  private latest: BrowserTab | null = null
+  private latestByClient = new Map<WebSocket, BrowserTab>()
   private clients = new Set<WebSocket>()
   private onStatusChange: ((connected: boolean) => void) | null = null
   private onTab: (() => void) | null = null
@@ -35,16 +35,18 @@ class BrowserBridge {
       this.emitStatus()
 
       ws.on('message', (raw) => {
-        this.handleMessage(raw.toString())
+        this.handleMessage(ws, raw.toString())
       })
 
       ws.on('close', () => {
         this.clients.delete(ws)
+        this.latestByClient.delete(ws)
         this.emitStatus()
       })
 
       ws.on('error', () => {
         this.clients.delete(ws)
+        this.latestByClient.delete(ws)
         this.emitStatus()
       })
     })
@@ -59,19 +61,19 @@ class BrowserBridge {
     this.onTab = cb
   }
 
-  private handleMessage(text: string): void {
+  private handleMessage(ws: WebSocket, text: string): void {
     try {
       const msg = JSON.parse(text) as { url?: string; title?: string; focused?: boolean }
       if (msg.focused === false) {
-        this.latest = null
+        this.latestByClient.delete(ws)
       } else {
         const url = msg.url ?? null
-        this.latest = {
+        this.latestByClient.set(ws, {
           url,
           domain: extractDomain(url),
           title: msg.title ?? null,
           receivedAt: Date.now()
-        }
+        })
       }
 
       this.onTab?.()
@@ -81,15 +83,15 @@ class BrowserBridge {
   }
 
   getFreshTab(): BrowserTab | null {
-    if (!this.latest) {
-      return null
+    const cutoff = Date.now() - FRESHNESS_MS
+    let freshest: BrowserTab | null = null
+    for (const tab of this.latestByClient.values()) {
+      if (tab.receivedAt > cutoff && (!freshest || tab.receivedAt > freshest.receivedAt)) {
+        freshest = tab
+      }
     }
 
-    if (Date.now() - this.latest.receivedAt > FRESHNESS_MS) {
-      return null
-    }
-
-    return this.latest
+    return freshest
   }
 
   isConnected(): boolean {
@@ -106,6 +108,7 @@ class BrowserBridge {
     }
 
     this.clients.clear()
+    this.latestByClient.clear()
     this.wss?.close()
     this.wss = null
   }

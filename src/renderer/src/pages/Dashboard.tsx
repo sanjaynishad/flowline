@@ -50,7 +50,9 @@ export function Dashboard({
 
   const totals = data?.totals ?? { productive: 0, neutral: 0, distracted: 0 }
   const totalSec = data?.totalTrackedSec ?? 0
-  const distractionLimitSec = (distractionLimitMin ?? 0) * 60
+  // The distraction limit is a daily cap, so only apply it to single-day ranges.
+  const singleDayRange = range === 'today' || range === 'yesterday'
+  const distractionLimitSec = singleDayRange ? (distractionLimitMin ?? 0) * 60 : 0
   const overDistractionLimit = distractionLimitSec > 0 && totals.distracted >= distractionLimitSec
 
   async function handleExport(format: 'csv' | 'json'): Promise<void> {
