@@ -1,0 +1,404 @@
+import { powerMonitor } from 'electron'
+import { ActiveWindow } from '@paymoapp/active-window'
+import type { Category, LiveStatus, Rule } from '../../shared/types'
+import { getRules, insertEvent, updateEventEnd, deleteEmptyEvent } from '../db/repositories'
+import { classify, isBrowser, type Candidate } from './categorizer'
+import { browserBridge } from '../browser/wsServer'
+
+interface WinInfo {
+  title: string
+  application: string
+  path: string
+  pid: number
+}
+
+interface OpenSpan {
+  eventId: number
+  appName: string
+  exePath: string | null
+  windowTitle: string | null
+  url: string | null
+  domain: string | null
+  category: Category
+  thresholdSec: number | null
+  startTs: number
+}
+
+export interface TrackerCallbacks {
+  onStatus: (status: LiveStatus) => void
+  onDistraction: (info: { label: string; seconds: number }) => void
+}
+
+class Tracker {
+  private rules: Rule[] = []
+  private span: OpenSpan | null = null
+  private afk = false
+  private tracking = false
+  private heartbeat: NodeJS.Timeout | null = null
+  private subscriptionId: number | null = null
+  private idleThresholdSec = 120
+  private heartbeatSec = 20
+  private distractionThresholdSec = 600
+  private distractedSinceMs: number | null = null
+  private distractionNotified = false
+  private callbacks: TrackerCallbacks | null = null
+
+  start(
+    config: { idleThresholdSec: number; heartbeatSec: number; distractionThresholdSec: number },
+    callbacks: TrackerCallbacks
+  ): void {
+    this.idleThresholdSec = config.idleThresholdSec
+    this.heartbeatSec = config.heartbeatSec
+    this.distractionThresholdSec = config.distractionThresholdSec
+    this.callbacks = callbacks
+    this.rules = getRules()
+    this.tracking = true
+
+    ActiveWindow.initialize()
+    this.subscriptionId = ActiveWindow.subscribe((winInfo) => {
+      this.onWindowChange(winInfo as WinInfo | null)
+    })
+
+    // No foreground event fires for the already-focused window, so seed the first span.
+    const initial = this.getActiveWindowSafe()
+    if (initial) {
+      this.openSpan(initial)
+    }
+
+    browserBridge.setTabListener(() => this.onBrowserTab())
+
+    this.heartbeat = setInterval(() => this.tick(), this.heartbeatSec * 1000)
+    this.emitStatus()
+  }
+
+  reloadRules(): void {
+    this.rules = getRules()
+    this.reclassifyActiveSpan()
+  }
+
+  updateConfig(config: {
+    idleThresholdSec?: number
+    heartbeatSec?: number
+    distractionThresholdSec?: number
+  }): void {
+    if (config.idleThresholdSec !== undefined) {
+      this.idleThresholdSec = config.idleThresholdSec
+    }
+
+    if (config.distractionThresholdSec !== undefined) {
+      this.distractionThresholdSec = config.distractionThresholdSec
+    }
+
+    if (config.heartbeatSec !== undefined && config.heartbeatSec !== this.heartbeatSec) {
+      this.heartbeatSec = config.heartbeatSec
+      if (this.heartbeat) {
+        clearInterval(this.heartbeat)
+        this.heartbeat = setInterval(() => this.tick(), this.heartbeatSec * 1000)
+      }
+    }
+  }
+
+  private buildCandidate(winInfo: WinInfo): Candidate {
+    const base: Candidate = {
+      appName: winInfo.application || 'Unknown',
+      exePath: winInfo.path || null,
+      windowTitle: winInfo.title || null,
+      domain: null
+    }
+
+    if (isBrowser(base)) {
+      const tab = browserBridge.getFreshTab()
+      if (tab) {
+        base.domain = tab.domain
+        base.windowTitle = tab.title ?? base.windowTitle
+      }
+    }
+
+    return base
+  }
+
+  private candidateKey(c: Candidate): string {
+    return `${c.exePath ?? c.appName}|${c.domain ?? ''}|${c.windowTitle ?? ''}`
+  }
+
+  private openSpan(winInfo: WinInfo): void {
+    const candidate = this.buildCandidate(winInfo)
+    const url = candidate.domain ? (browserBridge.getFreshTab()?.url ?? null) : null
+    this.beginSpan(candidate, url)
+  }
+
+  private beginSpan(candidate: Candidate, url: string | null): void {
+    const cls = classify(candidate, this.rules)
+    const now = Date.now()
+
+    const eventId = insertEvent({
+      appName: candidate.appName,
+      exePath: candidate.exePath,
+      windowTitle: candidate.windowTitle,
+      url,
+      domain: candidate.domain,
+      category: cls.category,
+      startTs: now,
+      endTs: now,
+      durationSec: 0,
+      isAfk: 0
+    })
+
+    this.span = {
+      eventId,
+      appName: candidate.appName,
+      exePath: candidate.exePath,
+      windowTitle: candidate.windowTitle,
+      url,
+      domain: candidate.domain,
+      category: cls.category,
+      thresholdSec: cls.thresholdSec,
+      startTs: now
+    }
+
+    if (cls.category === 'distracted') {
+      // Preserve the streak start across consecutive distracted spans.
+      if (this.distractedSinceMs === null) {
+        this.distractedSinceMs = now
+      }
+    } else {
+      this.distractedSinceMs = null
+      this.distractionNotified = false
+    }
+  }
+
+  // Splits the open span when its rule classification changes so rule edits/deletes apply immediately.
+  private reclassifyActiveSpan(): void {
+    if (!this.tracking || this.afk || !this.span) {
+      return
+    }
+
+    const candidate: Candidate = {
+      appName: this.span.appName,
+      exePath: this.span.exePath,
+      windowTitle: this.span.windowTitle,
+      domain: this.span.domain
+    }
+    const cls = classify(candidate, this.rules)
+    if (cls.category === this.span.category && cls.thresholdSec === this.span.thresholdSec) {
+      return
+    }
+
+    const url = this.span.url
+    this.closeSpan(Date.now())
+    this.beginSpan(candidate, url)
+    this.emitStatus()
+  }
+
+  private flushSpan(endTs: number): void {
+    if (!this.span) {
+      return
+    }
+
+    const durationSec = Math.max(0, Math.round((endTs - this.span.startTs) / 1000))
+    updateEventEnd(this.span.eventId, endTs, durationSec)
+  }
+
+  private closeSpan(endTs: number): void {
+    if (!this.span) {
+      return
+    }
+
+    const durationSec = Math.max(0, Math.round((endTs - this.span.startTs) / 1000))
+    if (durationSec === 0) {
+      deleteEmptyEvent(this.span.eventId)
+    } else {
+      updateEventEnd(this.span.eventId, endTs, durationSec)
+    }
+
+    this.span = null
+  }
+
+  private onWindowChange(winInfo: WinInfo | null): void {
+    if (!this.tracking) {
+      return
+    }
+
+    const now = Date.now()
+    this.afk = false
+
+    if (!winInfo) {
+      this.closeSpan(now)
+      this.emitStatus()
+      return
+    }
+
+    const candidate = this.buildCandidate(winInfo)
+    if (this.span && this.candidateKey(candidate) === this.spanKey()) {
+      this.emitStatus()
+      return
+    }
+
+    this.closeSpan(now)
+    this.openSpan(winInfo)
+    this.emitStatus()
+  }
+
+  private spanKey(): string {
+    if (!this.span) {
+      return ''
+    }
+
+    return `${this.span.exePath ?? this.span.appName}|${this.span.domain ?? ''}|${this.span.windowTitle ?? ''}`
+  }
+
+  // Returns null when the OS temporarily can't report a foreground window (lock screen, secure desktop, etc.).
+  private getActiveWindowSafe(): WinInfo | null {
+    try {
+      return ActiveWindow.getActiveWindow() as WinInfo | null
+    } catch {
+      return null
+    }
+  }
+
+  // Reopens the span when the foreground window's identity (including browser tab) changed; returns true if it split.
+  private syncActiveWindow(now: number): boolean {
+    const current = this.getActiveWindowSafe()
+    if (!current) {
+      return false
+    }
+
+    const candidate = this.buildCandidate(current)
+    if (this.candidateKey(candidate) === this.spanKey()) {
+      return false
+    }
+
+    this.closeSpan(now)
+    this.openSpan(current)
+    this.emitStatus()
+    return true
+  }
+
+  // Fired the moment the extension reports a tab, so within-heartbeat tab switches aren't misattributed.
+  private onBrowserTab(): void {
+    if (!this.tracking || this.afk || !this.span) {
+      return
+    }
+
+    this.syncActiveWindow(Date.now())
+  }
+
+  private tick(): void {
+    if (!this.tracking) {
+      return
+    }
+
+    const now = Date.now()
+    const idleSec = powerMonitor.getSystemIdleTime()
+
+    if (idleSec >= this.idleThresholdSec) {
+      if (!this.afk) {
+        const stoppedAt = Math.max(this.span?.startTs ?? now, now - idleSec * 1000)
+        this.closeSpan(stoppedAt)
+        this.afk = true
+        this.distractedSinceMs = null
+        this.distractionNotified = false
+      }
+
+      this.emitStatus()
+      return
+    }
+
+    if (this.afk || !this.span) {
+      this.afk = false
+      const current = this.getActiveWindowSafe()
+      if (current) {
+        this.openSpan(current)
+      }
+
+      this.emitStatus()
+      return
+    }
+
+    // Detect in-window browser tab changes (no OS foreground event fires for those).
+    if (this.syncActiveWindow(now)) {
+      return
+    }
+
+    this.flushSpan(now)
+    this.trackDistraction(now)
+    this.emitStatus()
+  }
+
+  private trackDistraction(now: number): void {
+    if (!this.span || this.span.category !== 'distracted') {
+      return
+    }
+
+    if (this.distractedSinceMs === null) {
+      this.distractedSinceMs = now
+    }
+
+    const elapsedSec = Math.round((now - this.distractedSinceMs) / 1000)
+    const limit = this.span.thresholdSec ?? this.distractionThresholdSec
+    if (!this.distractionNotified && elapsedSec >= limit) {
+      this.distractionNotified = true
+      this.callbacks?.onDistraction({
+        label: this.span.domain ?? this.span.appName,
+        seconds: elapsedSec
+      })
+    }
+  }
+
+  private emitStatus(): void {
+    const status: LiveStatus = {
+      tracking: this.tracking,
+      isAfk: this.afk,
+      current: this.span
+        ? {
+            appName: this.span.appName,
+            windowTitle: this.span.windowTitle,
+            domain: this.span.domain,
+            category: this.span.category,
+            startTs: this.span.startTs
+          }
+        : null,
+      activeSessionSec: this.span ? Math.round((Date.now() - this.span.startTs) / 1000) : 0,
+      browserConnected: browserBridge.isConnected()
+    }
+
+    this.callbacks?.onStatus(status)
+  }
+
+  getStatus(): LiveStatus {
+    return {
+      tracking: this.tracking,
+      isAfk: this.afk,
+      current: this.span
+        ? {
+            appName: this.span.appName,
+            windowTitle: this.span.windowTitle,
+            domain: this.span.domain,
+            category: this.span.category,
+            startTs: this.span.startTs
+          }
+        : null,
+      activeSessionSec: this.span ? Math.round((Date.now() - this.span.startTs) / 1000) : 0,
+      browserConnected: browserBridge.isConnected()
+    }
+  }
+
+  stop(): void {
+    this.tracking = false
+    if (this.span) {
+      this.closeSpan(Date.now())
+    }
+
+    if (this.heartbeat) {
+      clearInterval(this.heartbeat)
+      this.heartbeat = null
+    }
+
+    if (this.subscriptionId !== null) {
+      ActiveWindow.unsubscribe(this.subscriptionId)
+      this.subscriptionId = null
+    }
+  }
+}
+
+export const tracker = new Tracker()
