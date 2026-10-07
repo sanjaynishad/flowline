@@ -19,11 +19,16 @@ import type {
 const HOUR = 3600
 const MIN = 60
 
-const startOfToday = new Date()
-startOfToday.setHours(0, 0, 0, 0)
-const dayStart = startOfToday.getTime()
-// Fixed end-of-workday clock so every fixture stays in the past regardless of capture time.
-const now = dayStart + 18 * HOUR * 1000 + 30 * MIN * 1000
+// Anchor the mock clock to the most recent completed 18:30 workday so no fixture
+// (timeline, sessions, events, live window) is ever later than the real capture time.
+const WORKDAY_END_MS = (18 * HOUR + 30 * MIN) * 1000
+const midnight = new Date()
+midnight.setHours(0, 0, 0, 0)
+let dayStart = midnight.getTime()
+if (dayStart + WORKDAY_END_MS > Date.now()) {
+  dayStart -= 24 * HOUR * 1000
+}
+const now = dayStart + WORKDAY_END_MS
 
 function ts(hour: number, minute = 0): number {
   return dayStart + hour * HOUR * 1000 + minute * MIN * 1000

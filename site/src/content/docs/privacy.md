@@ -14,7 +14,7 @@ The database is not encrypted at rest. Anyone who can read your Windows user pro
 
 - Foreground app name, window title, category, and duration.
 - The active tab's full URL and its domain, when the [extension](/flowline/docs/browser-extension) is connected. Paths and query strings are stored, not just the host.
-- Settings, rules, focus sessions, and goal progress.
+- Settings, rules, focus sessions, and goal targets.
 
 The file path is `%APPDATA%/flowline/flowline.db`.
 

@@ -22,8 +22,13 @@ const placeholder =
   height="1800"
   loading={loading}
   decoding="async"
-  class="w-full"
+  class="shot-img w-full"
 />
 <noscript>
+  <style>
+    .shot-img {
+      display: none;
+    }
+  </style>
   <img src={`${base}-dark.png`} alt={alt} width="2880" height="1800" class="w-full" />
 </noscript>
