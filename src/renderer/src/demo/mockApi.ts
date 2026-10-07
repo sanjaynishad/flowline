@@ -19,10 +19,11 @@ import type {
 const HOUR = 3600
 const MIN = 60
 
-const now = Date.now()
-const startOfToday = new Date(now)
+const startOfToday = new Date()
 startOfToday.setHours(0, 0, 0, 0)
 const dayStart = startOfToday.getTime()
+// Fixed end-of-workday clock so every fixture stays in the past regardless of capture time.
+const now = dayStart + 18 * HOUR * 1000 + 30 * MIN * 1000
 
 function ts(hour: number, minute = 0): number {
   return dayStart + hour * HOUR * 1000 + minute * MIN * 1000
