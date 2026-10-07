@@ -235,6 +235,8 @@ let sessions: FocusSession[] = [
   { id: 6, startTs: ts(16, 10), endTs: ts(16, 35), plannedMin: 25, type: 'focus', completed: 0 }
 ]
 
+let activeSession: FocusSession | null = null
+
 let rules: Rule[] = [
   {
     id: 1,
@@ -405,11 +407,22 @@ export const mockApi = {
       completed: 0
     }
     sessions = [session, ...sessions]
+    activeSession = session
     return resolved(session)
   },
-  stopSession: () => resolved({ ok: true }),
+  stopSession: () => {
+    if (activeSession) {
+      const endTs = Date.now()
+      const completed =
+        endTs - activeSession.startTs >= activeSession.plannedMin * MIN * 1000 ? 1 : 0
+      const closed = { ...activeSession, endTs, completed }
+      sessions = sessions.map((s) => (s.id === closed.id ? closed : s))
+      activeSession = null
+    }
+    return resolved({ ok: true })
+  },
   listSessions: (_range: DateRange) => resolved(sessions),
-  getActiveSession: () => resolved(null),
+  getActiveSession: () => resolved(activeSession),
 
   listGoals: () => resolved(goals),
   setGoal: (metric: Goal['metric'], target: number) => {
