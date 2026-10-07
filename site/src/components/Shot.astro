@@ -9,10 +9,13 @@ interface Props {
 
 const { name, alt, loading = 'lazy' } = Astro.props
 const base = `${SITE.base}/screenshots/${name}`
+// Transparent placeholder so only the active theme variant is ever fetched (set by the script in Base.astro).
+const placeholder =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2880' height='1800'/%3E"
 ---
 
 <img
-  src={`${base}-dark.png`}
+  src={placeholder}
   data-shot={base}
   alt={alt}
   width="2880"
@@ -21,3 +24,6 @@ const base = `${SITE.base}/screenshots/${name}`
   decoding="async"
   class="w-full"
 />
+<noscript>
+  <img src={`${base}-dark.png`} alt={alt} width="2880" height="1800" class="w-full" />
+</noscript>

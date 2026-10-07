@@ -46,24 +46,23 @@ const excluded = [
 
     <div class="mt-9 flex flex-wrap items-center justify-center gap-3">
       <a
-        href={SITE.releases}
-        target="_blank"
-        rel="noopener"
+        href={href('/docs/installation')}
         class="rounded-xl bg-primary px-6 py-3 font-semibold text-on-primary shadow-glow transition-transform hover:-translate-y-0.5"
       >
-        Download installer (.exe)
+        Installation guide
       </a>
       <a
-        href={SITE.repo}
+        href={SITE.releases}
         target="_blank"
         rel="noopener"
         class="rounded-xl border border-border bg-surface/60 px-6 py-3 font-semibold text-fg hover:border-primary/50"
       >
-        View source on GitHub
+        GitHub Releases
       </a>
     </div>
     <p class="mt-4 font-mono text-xs text-muted">
-      Unsigned early releases: if SmartScreen warns, choose More info, then Run anyway.
+      Prebuilt installers are posted on GitHub Releases as they ship. Until one is up, build from
+      source in a few commands — the guide covers both.
     </p>
   </div>
 
