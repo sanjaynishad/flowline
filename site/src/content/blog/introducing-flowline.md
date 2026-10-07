@@ -17,7 +17,7 @@ The dashboard shows deep-work total, distraction time, context switches, a time-
 
 ## Browser domains
 
-An optional Chrome or Edge extension, Flowline Bridge, sends the active tab's domain to `localhost`. Time can land on `github.com` or `youtube.com` instead of a single Chrome bucket. The extension is loaded unpacked. It is not in the Chrome Web Store.
+An optional Chrome or Edge extension, Flowline Bridge, sends the active tab's full URL (path and query included) to `localhost`, and the app derives the domain from it. Time can land on `github.com` or `youtube.com` instead of a single Chrome bucket. The extension is loaded unpacked. It is not in the Chrome Web Store.
 
 ## Sessions, without pretending to be a blocker
 

@@ -24,10 +24,10 @@ const MIN = 60
 const WORKDAY_END_MS = (18 * HOUR + 30 * MIN) * 1000
 const midnight = new Date()
 midnight.setHours(0, 0, 0, 0)
-let dayStart = midnight.getTime()
-if (dayStart + WORKDAY_END_MS > Date.now()) {
-  dayStart -= 24 * HOUR * 1000
+if (midnight.getTime() + WORKDAY_END_MS > Date.now()) {
+  midnight.setDate(midnight.getDate() - 1)
 }
+const dayStart = midnight.getTime()
 const now = dayStart + WORKDAY_END_MS
 
 function ts(hour: number, minute = 0): number {
@@ -359,7 +359,7 @@ const liveStatus: LiveStatus = {
 
 const resolved = <T>(value: T): Promise<T> => Promise.resolve(value)
 
-export const mockApi = {
+export const mockApi: Window['api'] = {
   getSettings: () => resolved(settings),
   setSettings: (patch: Partial<Settings>) => {
     settings = { ...settings, ...patch }

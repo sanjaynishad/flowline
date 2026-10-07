@@ -1,6 +1,6 @@
 # Flowline
 
-> Flowline is a free, open-source automatic time tracker for Windows 10 and 11. It records the foreground app and, with an optional extension, the active browser domain. Activity is stored in a local SQLite file. There is no account, no cloud upload, and no telemetry in the app.
+> Flowline is a free, open-source automatic time tracker for Windows 10 and 11. It records the foreground app and, with an optional extension, the active tab's full URL (path and query included) and its domain. Activity is stored in a local SQLite file. There is no account, no cloud upload, and no telemetry in the app.
 
 Flowline is not a website blocker, not a screen recorder, and not employee-monitoring software. It does not run on macOS or Linux.
 

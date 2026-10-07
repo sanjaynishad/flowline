@@ -5,7 +5,7 @@ import { ThemeProvider } from './theme/ThemeProvider'
 import { mockApi } from './demo/mockApi'
 import './assets/main.css'
 
-;(window as unknown as { api: typeof mockApi }).api = mockApi
+window.api = mockApi
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
