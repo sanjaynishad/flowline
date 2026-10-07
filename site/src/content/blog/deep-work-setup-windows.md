@@ -21,7 +21,7 @@ If Insights says Chrome and nothing else, load the [browser extension](/flowline
 
 ## Set one daily target, not five
 
-Pick a deep-work target you have hit before, not the number you wish were true. The dashboard streak is only useful if missing a day means something. A distraction limit is separate: it only drives the limit progress and streak on the dashboard. It does not block a site or send a notification. Alerts come from the distraction alert, which fires after a continuous off-task stretch.
+Pick a deep-work target you have hit before, not the number you wish were true. The streak on the Sessions page is only useful if missing a day means something, and only the deep-work target feeds it. A distraction limit is separate: it just moves the limit indicator on the Dashboard. It does not touch your streak, block a site, or send a notification. Alerts come from the distraction alert, which fires after a continuous off-task stretch.
 
 Open Rules after the first day. Fix the apps that landed in the wrong bucket. The distraction alert is the right tool for sites that are fine for twenty minutes and a problem after that: it notifies you once a continuous distracting stretch runs past the alert threshold.
 

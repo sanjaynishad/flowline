@@ -210,16 +210,20 @@ const recentEvents: ActivityEvent[] = [
 }))
 
 const dailyTotals: DailyTotal[] = (() => {
-  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
   const prod = [210, 245, 190, 265, 220, 90, 60]
   const neu = [60, 75, 55, 80, 70, 40, 30]
   const dist = [55, 40, 70, 35, 60, 80, 45]
-  return days.map((day, i) => ({
-    day,
-    productive: prod[i] * MIN,
-    neutral: neu[i] * MIN,
-    distracted: dist[i] * MIN
-  }))
+  return prod.map((_, i) => {
+    const d = new Date(dayStart)
+    d.setDate(d.getDate() - (6 - i))
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+    return {
+      day: key,
+      productive: prod[i] * MIN,
+      neutral: neu[i] * MIN,
+      distracted: dist[i] * MIN
+    }
+  })
 })()
 
 let sessions: FocusSession[] = [

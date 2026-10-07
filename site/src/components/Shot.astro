@@ -8,22 +8,16 @@ interface Props {
 }
 
 const { name, alt, loading = 'lazy' } = Astro.props
-const src = (theme: 'light' | 'dark') => `${SITE.base}/screenshots/${name}-${theme}.png`
+const base = `${SITE.base}/screenshots/${name}`
 ---
 
 <img
-  src={src('light')}
+  src={`${base}-dark.png`}
+  data-shot={base}
   alt={alt}
-  width="1440"
-  height="900"
+  width="2880"
+  height="1800"
   loading={loading}
-  class="w-full dark:hidden"
-/>
-<img
-  src={src('dark')}
-  alt={alt}
-  width="1440"
-  height="900"
-  loading={loading}
-  class="hidden w-full dark:block"
+  decoding="async"
+  class="w-full"
 />

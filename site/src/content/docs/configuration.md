@@ -25,11 +25,12 @@ sends a distraction alert.
 
 ## Goals & streaks
 
-Set a daily **deep-work target** and a **distraction limit**. These drive:
+Set a daily **deep-work target** and a **distraction limit**:
 
-- The goal progress on the Dashboard.
-- Your running **streak** of days that hit the target.
-- The 7-day weekly report.
+- The **deep-work target** powers your daily goal progress and the day **streak** (shown on the Sessions page).
+- The **distraction limit** drives the distraction progress indicator on the Dashboard.
+
+The 7-day report reflects your tracked activity regardless of either target.
 
 ## Tracking behavior
 

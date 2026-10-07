@@ -13,7 +13,7 @@ The optional Flowline Bridge reports the active tab's URL to the app. Time then 
 ## Install
 
 1. Open `chrome://extensions` (or `edge://extensions`) and enable **Developer mode**.
-2. Click **Load unpacked** and select the `browser-extension/` folder from the Flowline source.
+2. Click **Load unpacked** and select the `browser-extension` folder. If you built from source it's in the repo root; if you installed the app, it's in the installation's `resources/browser-extension` folder.
 3. The extension auto-connects to the app over a local WebSocket at `ws://127.0.0.1:7413`.
 
 When connected, the app header shows **Browser Linked**.
