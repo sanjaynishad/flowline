@@ -1,0 +1,33 @@
+---
+import { getCollection } from 'astro:content'
+import { href } from '../consts'
+
+interface Props {
+  current?: string
+}
+
+const { current } = Astro.props
+const docs = (await getCollection('docs')).sort((a, b) => a.data.order - b.data.order)
+---
+
+<nav aria-label="Documentation" class="space-y-1">
+  <span class="px-3 font-mono text-[10px] uppercase tracking-widest text-muted">Documentation</span>
+  {
+    docs.map((doc) => {
+      const active = current === doc.id
+      return (
+        <a
+          href={href(`/docs/${doc.id}`)}
+          aria-current={active ? 'page' : undefined}
+          class={`block rounded-lg px-3 py-2 text-sm ${
+            active
+              ? 'bg-primary/15 font-medium text-primary'
+              : 'text-fg/80 hover:bg-surface hover:text-fg'
+          }`}
+        >
+          {doc.data.title}
+        </a>
+      )
+    })
+  }
+</nav>

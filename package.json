@@ -7,7 +7,7 @@
     "url": "https://www.sanjaynishad.com/"
   },
   "license": "MIT",
-  "homepage": "https://github.com/sanjaynishad/flowline#readme",
+  "homepage": "https://www.sanjaynishad.com/flowline",
   "repository": {
     "type": "git",
     "url": "https://github.com/sanjaynishad/flowline.git"
@@ -26,7 +26,6 @@
     "deep-work",
     "pomodoro",
     "pomodoro-timer",
-    "distraction-blocker",
     "self-tracking",
     "rescuetime-alternative",
     "local-first",
@@ -51,6 +50,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "rebuild": "electron-rebuild -f -w better-sqlite3",
+    "demo": "vite --config vite.demo.config.ts",
+    "screenshots": "node scripts/capture-screenshots.mjs",
     "postinstall": "electron-builder install-app-deps",
     "setup:win": "npm install --ignore-scripts && node node_modules/electron/install.js && electron-rebuild -f",
     "pack:win": "electron-vite build && electron-builder --win --dir",
@@ -84,6 +85,7 @@
     "eslint": "^9.39.5",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.1.1",
+    "playwright": "^1.63.0",
     "postcss": "^8.4.49",
     "prettier": "^3.9.9",
     "react": "^18.3.1",

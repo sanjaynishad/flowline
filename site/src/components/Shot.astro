@@ -1,0 +1,29 @@
+---
+import { SITE } from '../consts'
+
+interface Props {
+  name: string
+  alt: string
+  loading?: 'eager' | 'lazy'
+}
+
+const { name, alt, loading = 'lazy' } = Astro.props
+const src = (theme: 'light' | 'dark') => `${SITE.base}/screenshots/${name}-${theme}.png`
+---
+
+<img
+  src={src('light')}
+  alt={alt}
+  width="1440"
+  height="900"
+  loading={loading}
+  class="w-full dark:hidden"
+/>
+<img
+  src={src('dark')}
+  alt={alt}
+  width="1440"
+  height="900"
+  loading={loading}
+  class="hidden w-full dark:block"
+/>

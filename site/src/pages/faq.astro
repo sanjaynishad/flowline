@@ -1,0 +1,117 @@
+---
+import Base from '../layouts/Base.astro'
+import { SITE, href } from '../consts'
+import { faqJsonLd } from '../seo'
+
+const faqs = [
+  {
+    q: 'Is Flowline free?',
+    a: 'Yes. Flowline is free and open source under the MIT license. There is no paid tier, account, or subscription.'
+  },
+  {
+    q: 'Does Flowline work offline?',
+    a: 'Yes. Tracking, the dashboard, rules, and export all work with no internet connection. The optional browser extension talks to the app on localhost only.'
+  },
+  {
+    q: 'Where is my Flowline data stored?',
+    a: 'In a SQLite file at %APPDATA%\\flowline\\flowline.db on your Windows user profile. Flowline does not upload that file.'
+  },
+  {
+    q: 'Does Flowline record my screen or keystrokes?',
+    a: 'No. It stores the foreground app, the window title, and, if the extension is connected, the active browser domain. It does not capture screenshots, video, or keystrokes.'
+  },
+  {
+    q: 'Which platforms are supported?',
+    a: 'Windows 10 and 11 only. The tracker uses Windows foreground-window APIs, so there is no macOS or Linux build.'
+  },
+  {
+    q: 'Is Flowline a website blocker?',
+    a: 'No. Flowline categorizes distracting apps and sites and can notify you after a stretch of off-task time. It does not block websites, close apps, or lock the desktop.'
+  },
+  {
+    q: 'Can I use Flowline to monitor employees or students?',
+    a: 'No. It is a personal tracker for the person sitting at the PC. There are no team dashboards, admin accounts, or remote reporting.'
+  },
+  {
+    q: 'How is Flowline different from RescueTime?',
+    a: 'RescueTime is a cloud time tracker with an account. Flowline keeps activity in a local database, needs no sign-up, and is MIT licensed. See the comparison page for RescueTime, ActivityWatch, Toggl Track, and ManicTime.'
+  },
+  {
+    q: 'How is Flowline different from ActivityWatch?',
+    a: 'Both are local and open source. ActivityWatch is a watcher-based tracker you can extend across platforms. Flowline is a Windows app with a built-in dashboard, editable rules, Pomodoro blocks, goals, and an optional browser extension. It is less of a toolkit and more of a finished personal tracker.'
+  },
+  {
+    q: 'Do I need the browser extension?',
+    a: 'No, but per-site numbers are much better with it. Without the extension, browser time is guessed from the window title. With it, time is attributed to the domain, such as youtube.com or github.com. The extension is loaded unpacked. It is not in the Chrome Web Store.'
+  },
+  {
+    q: 'Does Flowline count time when I am away?',
+    a: 'No. Idle time is detected with the system power monitor. Minutes away from the keyboard are not added to your totals. You can change the idle threshold in Settings.'
+  },
+  {
+    q: 'Can I export or delete my history?',
+    a: 'Yes. Export CSV or JSON from the app. To wipe history, quit Flowline and delete %APPDATA%\\flowline\\flowline.db.'
+  },
+  {
+    q: 'Can I change how apps are categorized?',
+    a: 'Yes. The Rules page ships with about 80 defaults. Match by app executable, domain, or a window-title keyword, and optionally set a daily threshold after which an activity counts as distracting.'
+  },
+  {
+    q: 'Why does SmartScreen warn on install?',
+    a: 'Early releases are unsigned. Windows may show a protected-your-PC prompt. Choose More info, then Run anyway, or build the installer from source if you prefer to inspect it first.'
+  },
+  {
+    q: 'Does the website use analytics?',
+    a: 'This documentation site can load Google Analytics if a measurement ID is set at build time. The Flowline desktop app does not. App tracking data is not sent to that property.'
+  }
+]
+---
+
+<Base
+  title="FAQ"
+  description="Answers on price, Windows-only support, offline use, RescueTime, ActivityWatch, and what this time tracker does not record."
+  jsonLd={faqJsonLd(faqs)}
+>
+  <div class="mx-auto max-w-3xl px-5 py-12">
+    <h1 class="text-4xl font-bold tracking-tight text-fg">Flowline FAQ</h1>
+    <p class="mt-3 text-muted">
+      Pricing, platforms, privacy, and how this automatic time tracker differs from cloud apps.
+      For a side-by-side look, read the
+      <a href={href('/compare')} class="text-primary hover:text-primary-strong">comparison</a>.
+      Still stuck?
+      <a href={SITE.discussions} target="_blank" rel="noopener" class="text-primary hover:text-primary-strong">
+        Ask in GitHub Discussions
+      </a>
+      or
+      <a href={SITE.issues} target="_blank" rel="noopener" class="text-primary hover:text-primary-strong">
+        open an issue
+      </a>.
+    </p>
+
+    <div class="mt-10 divide-y divide-border/60">
+      {
+        faqs.map((f) => (
+          <details class="group py-5">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-medium text-fg">
+              {f.q}
+              <span class="material-symbols-outlined text-muted transition-transform group-open:rotate-180" aria-hidden="true">
+                expand_more
+              </span>
+            </summary>
+            <p class="mt-3 text-muted">{f.a}</p>
+          </details>
+        ))
+      }
+    </div>
+
+    <div class="mt-12 rounded-2xl border border-border bg-surface/40 p-6 text-center">
+      <p class="text-fg">Windows 10 or 11, and a few minutes to install.</p>
+      <a
+        href={href('/download')}
+        class="mt-4 inline-block rounded-xl bg-primary px-6 py-3 font-semibold text-on-primary"
+      >
+        Download Flowline
+      </a>
+    </div>
+  </div>
+</Base>

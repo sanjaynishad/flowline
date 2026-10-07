@@ -1,0 +1,43 @@
+---
+import { getCollection, render } from 'astro:content'
+import Base from '../../layouts/Base.astro'
+import DocsSidebar from '../../components/DocsSidebar.astro'
+import { breadcrumbJsonLd, techArticleJsonLd } from '../../seo'
+
+export async function getStaticPaths() {
+  const docs = await getCollection('docs')
+  return docs.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry }
+  }))
+}
+
+const { entry } = Astro.props
+const { Content } = await render(entry)
+
+const jsonLd = [
+  breadcrumbJsonLd([
+    { name: 'Home', path: '/' },
+    { name: 'Docs', path: '/docs' },
+    { name: entry.data.title, path: `/docs/${entry.id}` }
+  ]),
+  techArticleJsonLd({
+    title: entry.data.title,
+    description: entry.data.description,
+    path: `/docs/${entry.id}`
+  })
+]
+---
+
+<Base title={entry.data.title} description={entry.data.description} type="article" jsonLd={jsonLd}>
+  <div class="mx-auto max-w-content gap-10 px-5 py-10 lg:grid lg:grid-cols-[16rem_minmax(0,1fr)]">
+    <aside class="hidden lg:block">
+      <div class="sticky top-24">
+        <DocsSidebar current={entry.id} />
+      </div>
+    </aside>
+    <article class="prose-flow min-w-0 max-w-3xl">
+      <Content />
+    </article>
+  </div>
+</Base>

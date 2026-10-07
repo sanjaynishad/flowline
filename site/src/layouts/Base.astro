@@ -1,0 +1,58 @@
+---
+import Seo from '../components/Seo.astro'
+import Analytics from '../components/Analytics.astro'
+import Header from '../components/Header.astro'
+import Footer from '../components/Footer.astro'
+import '../styles/global.css'
+
+import { websiteJsonLd } from '../seo'
+
+interface Props {
+  title?: string
+  description?: string
+  image?: string
+  imageAlt?: string
+  type?: 'website' | 'article'
+  publishedTime?: string
+  noindex?: boolean
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[]
+}
+
+const { jsonLd, ...seoProps } = Astro.props
+const graph = [websiteJsonLd(), ...(jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [])]
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <script is:inline>
+      // Apply the theme before paint to avoid a flash. Defaults to the OS
+      // setting ("system") until the visitor explicitly picks one.
+      ;(function () {
+        try {
+          const stored = localStorage.getItem('theme')
+          const dark =
+            stored === 'dark' ||
+            ((!stored || stored === 'system') &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches)
+          document.documentElement.classList.toggle('dark', dark)
+        } catch (e) {}
+      })()
+    </script>
+    <Seo {...seoProps} jsonLd={graph} />
+    <Analytics />
+  </head>
+  <body class="min-h-screen">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-surface focus:px-3 focus:py-2"
+    >
+      Skip to content
+    </a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
