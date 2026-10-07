@@ -11,7 +11,8 @@ export default tseslint.config(
       '**/out',
       '**/build',
       'scripts/**',
-      'browser-extension/**'
+      'browser-extension/**',
+      'site/**'
     ]
   },
   tseslint.configs.recommended,
@@ -33,7 +34,12 @@ export default tseslint.config(
       ...eslintPluginReactHooks.configs.recommended.rules,
       // Latest-ref assignment and prop-syncing effects are intentional here.
       'react-hooks/refs': 'off',
-      'react-hooks/set-state-in-effect': 'off'
+      'react-hooks/set-state-in-effect': 'off',
+      // Allow underscore-prefixed args kept for interface/signature compatibility.
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' }
+      ]
     }
   },
   eslintConfigPrettier
