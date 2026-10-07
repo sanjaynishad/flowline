@@ -29,7 +29,8 @@ program is already using it, free that program up rather than changing Flowline.
 
 ## Troubleshooting
 
-- **Header still says "Browser" not "Browser Linked":** make sure the app is running before the
-  browser, and that no firewall rule blocks `127.0.0.1:7413`.
+- **Header still shows "No Extension":** the extension reconnects on its own every few seconds, so
+  startup order does not matter. Check that the app is running and that no firewall rule blocks
+  `127.0.0.1:7413`.
 - **Time still lands in a generic bucket:** confirm the extension is enabled and the page isn't a
   restricted URL (e.g. `chrome://` pages can't be read by extensions).

@@ -19,12 +19,13 @@ const pages = [
 
 const themes = ['dark', 'light']
 
+// Switch theme through the app's real control so component state, persisted
+// settings, and CSS all agree (the Settings page reflects the choice).
 async function setTheme(page, theme) {
-  await page.evaluate((t) => {
-    const root = document.documentElement
-    root.classList.remove('light', 'dark')
-    root.classList.add(t)
-  }, theme)
+  const label = theme === 'dark' ? 'Dark' : 'Light'
+  await page.locator('header button[aria-haspopup="menu"]').click()
+  await page.getByRole('menuitemradio').filter({ hasText: label }).click()
+  await page.waitForTimeout(200)
 }
 
 async function run() {
@@ -49,7 +50,6 @@ async function run() {
       await page.locator('nav button', { hasText: target.nav }).first().click()
       // Let route content and Recharts animations settle.
       await page.waitForTimeout(900)
-      await setTheme(page, theme)
 
       const file = resolve(outDir, `${target.id}-${theme}.png`)
       await page.screenshot({ path: file })
