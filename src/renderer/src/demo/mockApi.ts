@@ -30,13 +30,43 @@ function ts(hour: number, minute = 0): number {
 }
 
 const apps: AppUsage[] = [
-  { appName: 'Visual Studio Code', domain: null, category: 'productive', durationSec: 2 * HOUR + 40 * MIN, share: 0 },
-  { appName: 'Chrome', domain: 'github.com', category: 'productive', durationSec: 1 * HOUR + 15 * MIN, share: 0 },
-  { appName: 'Figma', domain: 'figma.com', category: 'productive', durationSec: 55 * MIN, share: 0 },
+  {
+    appName: 'Visual Studio Code',
+    domain: null,
+    category: 'productive',
+    durationSec: 2 * HOUR + 40 * MIN,
+    share: 0
+  },
+  {
+    appName: 'Chrome',
+    domain: 'github.com',
+    category: 'productive',
+    durationSec: 1 * HOUR + 15 * MIN,
+    share: 0
+  },
+  {
+    appName: 'Figma',
+    domain: 'figma.com',
+    category: 'productive',
+    durationSec: 55 * MIN,
+    share: 0
+  },
   { appName: 'Slack', domain: null, category: 'neutral', durationSec: 38 * MIN, share: 0 },
-  { appName: 'Chrome', domain: 'stackoverflow.com', category: 'productive', durationSec: 32 * MIN, share: 0 },
+  {
+    appName: 'Chrome',
+    domain: 'stackoverflow.com',
+    category: 'productive',
+    durationSec: 32 * MIN,
+    share: 0
+  },
   { appName: 'Notion', domain: 'notion.so', category: 'neutral', durationSec: 26 * MIN, share: 0 },
-  { appName: 'Chrome', domain: 'youtube.com', category: 'distracted', durationSec: 42 * MIN, share: 0 },
+  {
+    appName: 'Chrome',
+    domain: 'youtube.com',
+    category: 'distracted',
+    durationSec: 42 * MIN,
+    share: 0
+  },
   { appName: 'Chrome', domain: 'x.com', category: 'distracted', durationSec: 18 * MIN, share: 0 },
   { appName: 'Spotify', domain: null, category: 'neutral', durationSec: 14 * MIN, share: 0 }
 ]
@@ -45,6 +75,9 @@ const totalAppSec = apps.reduce((sum, a) => sum + a.durationSec, 0)
 apps.forEach((a) => {
   a.share = a.durationSec / totalAppSec
 })
+
+// Match the production API's duration-sorted ordering so "top" slices are correct.
+apps.sort((a, b) => b.durationSec - a.durationSec)
 
 function sumBy(cat: Category): number {
   return apps.filter((a) => a.category === cat).reduce((s, a) => s + a.durationSec, 0)
@@ -71,11 +104,24 @@ function buildTimeline(): TimelinePoint[] {
   const points: TimelinePoint[] = []
   // 9am -> 6pm working day, one point per 30 min.
   const shape: [number, number, number][] = [
-    [9, 20, 2], [9.5, 25, 0], [10, 28, 1], [10.5, 26, 3],
-    [11, 24, 5], [11.5, 18, 10], [12, 8, 18], [12.5, 6, 20],
-    [13, 22, 6], [13.5, 27, 1], [14, 29, 0], [14.5, 25, 4],
-    [15, 20, 9], [15.5, 15, 13], [16, 24, 3], [16.5, 28, 1],
-    [17, 23, 5], [17.5, 17, 11]
+    [9, 20, 2],
+    [9.5, 25, 0],
+    [10, 28, 1],
+    [10.5, 26, 3],
+    [11, 24, 5],
+    [11.5, 18, 10],
+    [12, 8, 18],
+    [12.5, 6, 20],
+    [13, 22, 6],
+    [13.5, 27, 1],
+    [14, 29, 0],
+    [14.5, 25, 4],
+    [15, 20, 9],
+    [15.5, 15, 13],
+    [16, 24, 3],
+    [16.5, 28, 1],
+    [17, 23, 5],
+    [17.5, 17, 11]
   ]
   for (const [hour, prod, dist] of shape) {
     points.push({
@@ -90,12 +136,66 @@ function buildTimeline(): TimelinePoint[] {
 }
 
 const recentEvents: ActivityEvent[] = [
-  { app: 'Visual Studio Code', title: 'mockApi.ts — flowline', url: null, domain: null, cat: 'productive', h: 17, m: 42, dur: 18 },
-  { app: 'Chrome', title: 'sanjaynishad/flowline · Pull Requests', url: 'https://github.com/sanjaynishad/flowline/pulls', domain: 'github.com', cat: 'productive', h: 17, m: 30, dur: 12 },
-  { app: 'Slack', title: '#engineering', url: null, domain: null, cat: 'neutral', h: 17, m: 18, dur: 8 },
-  { app: 'Chrome', title: 'How to center a div — Stack Overflow', url: 'https://stackoverflow.com', domain: 'stackoverflow.com', cat: 'productive', h: 17, m: 4, dur: 14 },
-  { app: 'Chrome', title: 'Lofi beats to code to — YouTube', url: 'https://youtube.com/watch', domain: 'youtube.com', cat: 'distracted', h: 16, m: 40, dur: 22 },
-  { app: 'Figma', title: 'Flowline — Dashboard', url: 'https://figma.com/file', domain: 'figma.com', cat: 'productive', h: 16, m: 0, dur: 40 }
+  {
+    app: 'Visual Studio Code',
+    title: 'mockApi.ts — flowline',
+    url: null,
+    domain: null,
+    cat: 'productive',
+    h: 17,
+    m: 42,
+    dur: 18
+  },
+  {
+    app: 'Chrome',
+    title: 'sanjaynishad/flowline · Pull Requests',
+    url: 'https://github.com/sanjaynishad/flowline/pulls',
+    domain: 'github.com',
+    cat: 'productive',
+    h: 17,
+    m: 30,
+    dur: 12
+  },
+  {
+    app: 'Slack',
+    title: '#engineering',
+    url: null,
+    domain: null,
+    cat: 'neutral',
+    h: 17,
+    m: 18,
+    dur: 8
+  },
+  {
+    app: 'Chrome',
+    title: 'How to center a div — Stack Overflow',
+    url: 'https://stackoverflow.com',
+    domain: 'stackoverflow.com',
+    cat: 'productive',
+    h: 17,
+    m: 4,
+    dur: 14
+  },
+  {
+    app: 'Chrome',
+    title: 'Lofi beats to code to — YouTube',
+    url: 'https://youtube.com/watch',
+    domain: 'youtube.com',
+    cat: 'distracted',
+    h: 16,
+    m: 40,
+    dur: 22
+  },
+  {
+    app: 'Figma',
+    title: 'Flowline — Dashboard',
+    url: 'https://figma.com/file',
+    domain: 'figma.com',
+    cat: 'productive',
+    h: 16,
+    m: 0,
+    dur: 40
+  }
 ].map((e, i) => ({
   id: i + 1,
   appName: e.app,
@@ -133,16 +233,86 @@ let sessions: FocusSession[] = [
 ]
 
 let rules: Rule[] = [
-  { id: 1, matcher: 'Code.exe', matchType: 'exe', category: 'productive', thresholdSec: null, createdAt: now },
-  { id: 2, matcher: 'github.com', matchType: 'domain', category: 'productive', thresholdSec: null, createdAt: now },
-  { id: 3, matcher: 'figma.com', matchType: 'domain', category: 'productive', thresholdSec: null, createdAt: now },
-  { id: 4, matcher: 'stackoverflow.com', matchType: 'domain', category: 'productive', thresholdSec: null, createdAt: now },
-  { id: 5, matcher: 'youtube.com', matchType: 'domain', category: 'distracted', thresholdSec: 600, createdAt: now },
-  { id: 6, matcher: 'x.com', matchType: 'domain', category: 'distracted', thresholdSec: null, createdAt: now },
-  { id: 7, matcher: 'reddit.com', matchType: 'domain', category: 'distracted', thresholdSec: null, createdAt: now },
-  { id: 8, matcher: 'Slack.exe', matchType: 'exe', category: 'neutral', thresholdSec: null, createdAt: now },
-  { id: 9, matcher: 'Spotify.exe', matchType: 'exe', category: 'neutral', thresholdSec: null, createdAt: now },
-  { id: 10, matcher: 'Standup', matchType: 'title', category: 'neutral', thresholdSec: null, createdAt: now }
+  {
+    id: 1,
+    matcher: 'Code.exe',
+    matchType: 'exe',
+    category: 'productive',
+    thresholdSec: null,
+    createdAt: now
+  },
+  {
+    id: 2,
+    matcher: 'github.com',
+    matchType: 'domain',
+    category: 'productive',
+    thresholdSec: null,
+    createdAt: now
+  },
+  {
+    id: 3,
+    matcher: 'figma.com',
+    matchType: 'domain',
+    category: 'productive',
+    thresholdSec: null,
+    createdAt: now
+  },
+  {
+    id: 4,
+    matcher: 'stackoverflow.com',
+    matchType: 'domain',
+    category: 'productive',
+    thresholdSec: null,
+    createdAt: now
+  },
+  {
+    id: 5,
+    matcher: 'youtube.com',
+    matchType: 'domain',
+    category: 'distracted',
+    thresholdSec: 600,
+    createdAt: now
+  },
+  {
+    id: 6,
+    matcher: 'x.com',
+    matchType: 'domain',
+    category: 'distracted',
+    thresholdSec: null,
+    createdAt: now
+  },
+  {
+    id: 7,
+    matcher: 'reddit.com',
+    matchType: 'domain',
+    category: 'distracted',
+    thresholdSec: null,
+    createdAt: now
+  },
+  {
+    id: 8,
+    matcher: 'Slack.exe',
+    matchType: 'exe',
+    category: 'neutral',
+    thresholdSec: null,
+    createdAt: now
+  },
+  {
+    id: 9,
+    matcher: 'Spotify.exe',
+    matchType: 'exe',
+    category: 'neutral',
+    thresholdSec: null,
+    createdAt: now
+  },
+  {
+    id: 10,
+    matcher: 'Standup',
+    matchType: 'title',
+    category: 'neutral',
+    thresholdSec: null,
+    createdAt: now
+  }
 ]
 
 let settings: Settings = {
@@ -186,7 +356,12 @@ export const mockApi = {
   },
 
   listRules: () => resolved(rules),
-  addRule: (input: { matcher: string; matchType: MatchType; category: Category; thresholdSec?: number | null }) => {
+  addRule: (input: {
+    matcher: string
+    matchType: MatchType
+    category: Category
+    thresholdSec?: number | null
+  }) => {
     const rule: Rule = {
       id: Math.max(0, ...rules.map((r) => r.id)) + 1,
       matcher: input.matcher,
@@ -239,7 +414,8 @@ export const mockApi = {
     return resolved(goals)
   },
 
-  exportData: (_range: DateRange, _format: 'csv' | 'json') => resolved({ ok: true, path: 'C:/Users/you/Downloads/flowline-export.csv' }),
+  exportData: (_range: DateRange, _format: 'csv' | 'json') =>
+    resolved({ ok: true, path: 'C:/Users/you/Downloads/flowline-export.csv' }),
 
   onStatusUpdate: (_cb: (status: LiveStatus) => void) => {
     return () => {}

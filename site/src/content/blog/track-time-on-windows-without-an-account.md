@@ -25,7 +25,7 @@ The extension talks to `ws://127.0.0.1:7413` on your machine. It is not a store 
 
 ## Fix the rules that are wrong
 
-Open Rules. Match an app by executable name (`Code.exe`), a site by domain, or a window title by keyword. If a chat app is productive until it is not, set a daily threshold so the extra time counts as distracting.
+Open Rules. Match an app by executable name (`Code.exe`), a site by domain, or a window title by keyword. If a chat app is productive until it is not, put it in the right category and let the distraction alert catch the long off-task stretches.
 
 Categories are productive, neutral, and distracting. Edit them. The defaults will misfile something you care about.
 

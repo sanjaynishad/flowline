@@ -8,7 +8,7 @@ order: 3
 
 Without an extension, Flowline can only see the browser window title. That is enough to know Chrome was open. It is a weak way to tell GitHub from YouTube.
 
-The optional Flowline Bridge reports the active tab's domain to the app. Time then lands on `youtube.com` or `github.com` instead of one Chrome bucket. It is a Manifest V3 extension for Chrome and Edge. It is not listed in the Chrome Web Store. You load it unpacked.
+The optional Flowline Bridge reports the active tab's URL to the app. Time then lands on `youtube.com` or `github.com` instead of one Chrome bucket. It is a Manifest V3 extension for Chrome and Edge. It is not listed in the Chrome Web Store. You load it unpacked.
 
 ## Install
 
@@ -20,12 +20,12 @@ When connected, the app header shows **Browser Linked**.
 
 ## How it works
 
-The extension sends the active tab's domain to the Flowline process on the same PC, over
-`localhost`. It does not call an external server. That traffic is covered again in
-[Privacy](/flowline/docs/privacy).
+The extension sends the active tab's URL to the Flowline process on the same PC, over
+`localhost`. The app stores both that full URL and the domain it derives from it. It does not
+call an external server. That traffic is covered again in [Privacy](/flowline/docs/privacy).
 
-If the WebSocket port conflicts with something else on your system, change it in
-**Settings → Advanced** (and the extension will reconnect on the new port).
+The app and extension communicate on `ws://127.0.0.1:7413`. That port is fixed, so if another
+program is already using it, free that program up rather than changing Flowline.
 
 ## Troubleshooting
 

@@ -7,19 +7,11 @@ const id = SITE.ga4
 {
   id && (
     <>
+      <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${id}`} />
       <script
         is:inline
-        src={`https://www.googletagmanager.com/gtag/js?id=${id}`}
-        async
+        set:html={`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${id}');`}
       />
-      <script is:inline define:vars={{ id }}>
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', id);
-        `}
-      </script>
     </>
   )
 }

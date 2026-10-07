@@ -11,7 +11,7 @@ Flowline runs on Windows 10 and 11, 64-bit. There is no Mac or Linux installer. 
 ## Option A: download the installer
 
 1. Go to the [Releases page](https://github.com/sanjaynishad/flowline/releases).
-2. Download the latest `Flowline-Setup-x.y.z.exe`.
+2. Download the latest `Flowline-<version>-setup.exe` (for example `Flowline-0.1.0-setup.exe`).
 3. Run it. Flowline installs, adds a system-tray icon, and can start automatically on login.
 
 > Flowline is open source and unsigned during early releases, so Windows SmartScreen may show

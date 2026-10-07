@@ -19,8 +19,9 @@ Each rule matches by:
 - **Domain**: a website host, for example `github.com` (most accurate with the browser extension).
 - **Title**: a keyword in the window title, for example `Standup`.
 
-Rules can also carry an optional **threshold**: a daily time budget after which the activity is
-treated as distracting. That is useful for sites that are fine in small doses.
+Rules can also carry an optional **threshold**. It does not change a rule's category or act as a
+daily budget; it only sets how long a continuous distracting stretch must run before Flowline
+sends a distraction alert.
 
 ## Goals & streaks
 
@@ -32,11 +33,11 @@ Set a daily **deep-work target** and a **distraction limit**. These drive:
 
 ## Tracking behavior
 
-| Setting | What it controls |
-| --- | --- |
-| Idle threshold | How long without input before time stops counting (AFK). |
-| Heartbeat interval | How often Flowline checks idle state and flushes durations. |
-| Distraction alert | How long of continuous off-task time triggers a notification. |
+| Setting            | What it controls                                              |
+| ------------------ | ------------------------------------------------------------- |
+| Idle threshold     | How long without input before time stops counting (AFK).      |
+| Heartbeat interval | How often Flowline checks idle state and flushes durations.   |
+| Distraction alert  | How long of continuous off-task time triggers a notification. |
 
 ## Notifications & startup
 

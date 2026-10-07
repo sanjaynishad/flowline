@@ -1,6 +1,6 @@
 ---
 title: Introduction
-description: "What the Flowline automatic time tracker does on Windows, who it is for, and the limits: no Mac build, no website blocker, no account."
+description: 'What the Flowline automatic time tracker does on Windows, who it is for, and the limits: no Mac build, no website blocker, no account.'
 order: 1
 ---
 

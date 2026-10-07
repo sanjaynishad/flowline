@@ -23,7 +23,7 @@ If Insights says Chrome and nothing else, load the [browser extension](/flowline
 
 Pick a deep-work target you have hit before, not the number you wish were true. The dashboard streak is only useful if missing a day means something. A distraction limit is separate. It does not shut the site off. It draws a line on the chart and can notify you.
 
-Open Rules after the first day. Fix the apps that landed in the wrong bucket. A daily threshold is the right tool for sites that are fine for twenty minutes and a problem after that.
+Open Rules after the first day. Fix the apps that landed in the wrong bucket. The distraction alert is the right tool for sites that are fine for twenty minutes and a problem after that: it notifies you once a continuous distracting stretch runs past the limit.
 
 ## Use a 25-minute block for the work you already named
 

@@ -18,7 +18,7 @@ const faqs = [
   },
   {
     q: 'Does Flowline record my screen or keystrokes?',
-    a: 'No. It stores the foreground app, the window title, and, if the extension is connected, the active browser domain. It does not capture screenshots, video, or keystrokes.'
+    a: 'No. It stores the foreground app, the window title, and, if the extension is connected, the active tab\u2019s full URL (path and query included) and its domain. It does not capture screenshots, video, or keystrokes.'
   },
   {
     q: 'Which platforms are supported?',
@@ -54,7 +54,7 @@ const faqs = [
   },
   {
     q: 'Can I change how apps are categorized?',
-    a: 'Yes. The Rules page ships with about 80 defaults. Match by app executable, domain, or a window-title keyword, and optionally set a daily threshold after which an activity counts as distracting.'
+    a: 'Yes. The Rules page ships with about 80 defaults. Match by app executable, domain, or a window-title keyword. A rule can also carry a threshold, which only delays the distraction alert during a continuous off-task stretch \u2014 it does not reclassify activity or act as a daily budget.'
   },
   {
     q: 'Why does SmartScreen warn on install?',

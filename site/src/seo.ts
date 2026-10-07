@@ -8,8 +8,8 @@ export const HOME_DESCRIPTION =
   'Flowline is a free, open-source automatic time tracker for Windows. It logs apps and browser tabs on your PC, with no account and no cloud upload.'
 
 export const OG_IMAGE = `${SITE.base}/screenshots/dashboard-dark.png`
-export const OG_IMAGE_WIDTH = 1440
-export const OG_IMAGE_HEIGHT = 900
+export const OG_IMAGE_WIDTH = 2880
+export const OG_IMAGE_HEIGHT = 1800
 export const OG_IMAGE_ALT =
   'Flowline dashboard with deep-work total, distraction time, a time-allocation ring, and top applications'
 
@@ -54,9 +54,7 @@ export function softwareJsonLd(): Record<string, unknown> {
   }
 }
 
-export function breadcrumbJsonLd(
-  items: { name: string; path: string }[]
-): Record<string, unknown> {
+export function breadcrumbJsonLd(items: { name: string; path: string }[]): Record<string, unknown> {
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
