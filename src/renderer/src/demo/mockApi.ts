@@ -125,9 +125,9 @@ function buildTimeline(): TimelinePoint[] {
   for (const [hour, prod, dist] of shape) {
     points.push({
       ts: ts(Math.floor(hour), (hour % 1) * 60),
-      productive: prod * MIN,
-      neutral: Math.max(0, 30 - prod - dist) * MIN,
-      distracted: dist * MIN
+      productive: prod,
+      neutral: Math.max(0, 30 - prod - dist),
+      distracted: dist
     })
   }
 
