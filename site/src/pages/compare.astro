@@ -1,0 +1,227 @@
+---
+import Base from '../layouts/Base.astro'
+import { href } from '../consts'
+import { faqJsonLd } from '../seo'
+
+const columns = ['Flowline', 'RescueTime', 'ActivityWatch', 'Toggl Track', 'ManicTime']
+
+const rows = [
+  {
+    label: 'Where activity lives',
+    cells: [
+      'Local SQLite on your PC',
+      'Vendor cloud account',
+      'Local database',
+      'Vendor cloud account',
+      'Local by default; commercial product'
+    ]
+  },
+  {
+    label: 'Account required',
+    cells: ['No', 'Yes', 'No', 'Yes', 'Check their current setup']
+  },
+  {
+    label: 'How time is captured',
+    cells: [
+      'Automatic foreground window',
+      'Automatic',
+      'Automatic watchers',
+      'Manual timer first',
+      'Automatic on Windows'
+    ]
+  },
+  {
+    label: 'Browser detail',
+    cells: [
+      'Domain, with optional extension',
+      'Sites, via their client',
+      'Browser watchers you install',
+      'Depends on the timer entry',
+      'App and document tracking'
+    ]
+  },
+  {
+    label: 'Price',
+    cells: [
+      'Free, MIT license',
+      'Free tier and paid plans; check current pricing',
+      'Free, open source',
+      'Free tier and paid plans; check current pricing',
+      'Free version plus paid licenses; check current pricing'
+    ]
+  },
+  {
+    label: 'Open source',
+    cells: ['Yes', 'No', 'Yes', 'No', 'No']
+  },
+  {
+    label: 'Platforms',
+    cells: [
+      'Windows 10 and 11 only',
+      'Windows, Mac, mobile',
+      'Windows, Mac, Linux',
+      'Windows and Mac apps, plus web and mobile',
+      'Windows, with other editions sold separately'
+    ]
+  },
+  {
+    label: 'Team or employer features',
+    cells: ['No', 'Yes, on paid plans', 'Not the point of the project', 'Yes', 'Yes, in business editions']
+  },
+  {
+    label: 'Blocks websites',
+    cells: ['No', 'Yes, on paid plans', 'No', 'No', 'No']
+  }
+]
+
+const faqs = [
+  {
+    q: 'Is Flowline a RescueTime alternative?',
+    a: 'For personal Windows tracking, yes, if you want automatic capture without a cloud account. RescueTime still fits if you need their reports, coaching, or multi-device sync. Flowline will not replace a team plan.'
+  },
+  {
+    q: 'Is Flowline an ActivityWatch alternative?',
+    a: 'Partly. Both store data locally and are open source. Pick ActivityWatch if you want cross-platform watchers and a hackable event log. Pick Flowline if you want a Windows app with rules, a focus dashboard, Pomodoro blocks, and goals already in the UI.'
+  },
+  {
+    q: 'Is Flowline a Toggl Track alternative?',
+    a: 'Only if you hate starting a timer. Toggl Track is built around manual time entries and team reporting. Flowline never asks you to press start for ordinary app tracking, and it has no team workspace.'
+  },
+  {
+    q: 'Does Flowline replace a website blocker?',
+    a: 'No. It can notify you after a stretch of distracting activity. It does not block sites or apps. Pair it with a blocker if that is the behavior you want.'
+  }
+]
+---
+
+<Base
+  title="RescueTime and ActivityWatch Alternative"
+  description="Compare Flowline with RescueTime, ActivityWatch, Toggl Track, and ManicTime: local data, automatic tracking, price, and what it does not do."
+  jsonLd={faqJsonLd(faqs)}
+>
+  <div class="mx-auto max-w-content px-5 py-12">
+    <div class="max-w-3xl">
+      <h1 class="text-4xl font-bold tracking-tight text-fg">
+        Flowline vs RescueTime, ActivityWatch, and other time trackers
+      </h1>
+      <p class="mt-4 text-muted">
+        People usually land here looking for a RescueTime alternative or an ActivityWatch
+        alternative that stays on the PC. This table is the practical difference, not a ranking.
+        Pricing and plan names change. When a cell depends on the vendor's current offer, it says
+        so.
+      </p>
+    </div>
+
+    <div
+      class="mt-10 overflow-x-auto rounded-2xl border border-border"
+      tabindex="0"
+      role="region"
+      aria-label="Time tracker comparison table"
+    >
+      <table class="min-w-[52rem] w-full text-left text-sm">
+        <thead class="bg-surface/60">
+          <tr>
+            <th class="px-4 py-3 font-semibold text-fg"> </th>
+            {columns.map((col) => <th class="px-4 py-3 font-semibold text-fg">{col}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {
+            rows.map((row) => (
+              <tr class="border-t border-border/70">
+                <th class="px-4 py-3 font-medium text-fg">{row.label}</th>
+                {row.cells.map((cell) => (
+                  <td class="px-4 py-3 text-muted">{cell}</td>
+                ))}
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="mt-3 text-xs text-muted">
+      Competitor details describe the products as commonly shipped, not a live scrape of their
+      pricing pages. Confirm plans before you buy.
+    </p>
+
+    <div class="mt-14 grid gap-10 lg:grid-cols-2">
+      <section>
+        <h2 class="text-2xl font-semibold text-fg">RescueTime alternative, with a limit</h2>
+        <p class="mt-3 text-muted">
+          RescueTime's pitch is automatic tracking plus reports in their cloud. Flowline does the
+          automatic part on Windows and stops there: no account, no uploaded timeline, no coaching
+          emails. You lose multi-device history and their mobile apps. You keep the SQLite file.
+        </p>
+      </section>
+      <section>
+        <h2 class="text-2xl font-semibold text-fg">ActivityWatch alternative, different shape</h2>
+        <p class="mt-3 text-muted">
+          ActivityWatch is the closest project in spirit. It is local, open source, and more
+          portable. You assemble watchers and often live closer to the raw events. Flowline is
+          narrower: Windows only, a fixed dashboard, editable category rules, distraction alerts,
+          and Pomodoro blocks. If you want to script the data, ActivityWatch is the better base.
+          If you want to install and read today, start with Flowline.
+        </p>
+        <p class="mt-3 text-sm">
+          <a
+            href={href('/blog/flowline-vs-activitywatch')}
+            class="font-semibold text-primary hover:text-primary-strong"
+          >
+            Longer note on the two local trackers
+          </a>
+        </p>
+      </section>
+      <section>
+        <h2 class="text-2xl font-semibold text-fg">Toggl Track is a timer</h2>
+        <p class="mt-3 text-muted">
+          Toggl Track expects you to start and stop entries, then report them to a team. Flowline
+          never asks for that on ordinary app switches. It is a poor fit if your job is billing
+          hours to clients. It is a better fit if you forget the timer exists by 10 a.m.
+        </p>
+      </section>
+      <section>
+        <h2 class="text-2xl font-semibold text-fg">ManicTime is the Windows incumbent</h2>
+        <p class="mt-3 text-muted">
+          ManicTime has tracked Windows apps automatically for years, and it sells business
+          editions for teams. Flowline does not compete with those editions. The overlap is
+          personal automatic tracking on one PC, with Flowline free and inspectable. ManicTime has
+          a free Windows version alongside paid licenses and a longer track record. Check their
+          current license before you assume a price.
+        </p>
+      </section>
+    </div>
+
+    <section class="mt-14">
+      <h2 class="text-2xl font-semibold text-fg">Questions this comparison gets</h2>
+      <div class="mt-6 divide-y divide-border/60">
+        {
+          faqs.map((faq) => (
+            <div class="py-5">
+              <h3 class="text-lg font-medium text-fg">{faq.q}</h3>
+              <p class="mt-2 text-muted">{faq.a}</p>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <div class="mt-12 rounded-2xl border border-primary/30 bg-surface/40 p-8 text-center">
+      <h2 class="text-2xl font-semibold text-fg">Try the Windows build</h2>
+      <p class="mx-auto mt-2 max-w-xl text-muted">
+        If the table's Flowline column is the one you wanted, install it. If you needed Mac, a
+        team dashboard, or a site blocker, it will not grow into those.
+      </p>
+      <div class="mt-6 flex flex-wrap justify-center gap-3">
+        <a href={href('/download')} class="rounded-xl bg-primary px-6 py-3 font-semibold text-on-primary">
+          Download for Windows
+        </a>
+        <a
+          href={href('/faq')}
+          class="rounded-xl border border-border bg-surface/60 px-6 py-3 font-semibold text-fg"
+        >
+          Read the FAQ
+        </a>
+      </div>
+    </div>
+  </div>
+</Base>

@@ -1,0 +1,56 @@
+---
+import { NAV, SITE, navHref } from '../consts'
+
+const year = new Date().getFullYear()
+---
+
+<footer class="mt-24 border-t border-border/60 bg-bg-soft/50">
+  <div class="mx-auto max-w-content px-5 py-12">
+    <div class="flex flex-col justify-between gap-8 md:flex-row">
+      <div class="max-w-sm">
+        <span class="text-base font-semibold text-fg">Flowline</span>
+        <p class="mt-2 text-sm text-muted">
+          Free automatic time tracker for Windows. It logs apps and browser tabs in a local
+          SQLite file. No account, no cloud upload.
+        </p>
+      </div>
+
+      <div class="flex gap-12">
+        <div>
+          <h3 class="font-mono text-[10px] uppercase tracking-widest text-muted">Product</h3>
+          <ul class="mt-3 space-y-2 text-sm">
+            {
+              NAV.filter((item) => !item.external).map((item) => (
+                <li>
+                  <a
+                    href={navHref(item)}
+                    target={item.external ? '_blank' : undefined}
+                    rel={item.external ? 'noopener' : undefined}
+                    class="text-fg/80 hover:text-primary"
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="font-mono text-[10px] uppercase tracking-widest text-muted">Project</h3>
+          <ul class="mt-3 space-y-2 text-sm">
+            <li><a href={SITE.repo} target="_blank" rel="noopener" class="text-fg/80 hover:text-primary">GitHub</a></li>
+            <li><a href={SITE.releases} target="_blank" rel="noopener" class="text-fg/80 hover:text-primary">Releases</a></li>
+            <li><a href={SITE.discussions} target="_blank" rel="noopener" class="text-fg/80 hover:text-primary">Discussions</a></li>
+            <li><a href={SITE.issues} target="_blank" rel="noopener" class="text-fg/80 hover:text-primary">Report an issue</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-10 flex flex-col items-start justify-between gap-2 border-t border-border/50 pt-6 text-sm text-muted sm:flex-row sm:items-center">
+      <p>© {year} <a href={SITE.authorUrl} class="hover:text-fg">{SITE.author}</a>. MIT Licensed.</p>
+      <p class="font-mono text-xs">Built with Astro · Open source</p>
+    </div>
+  </div>
+</footer>

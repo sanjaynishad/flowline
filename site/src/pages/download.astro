@@ -1,0 +1,137 @@
+---
+import Base from '../layouts/Base.astro'
+import { SITE, href } from '../consts'
+import { VERSION } from '../seo'
+
+const steps = [
+  'Download the latest Flowline setup .exe from GitHub Releases. The file name looks like Flowline-0.1.0-setup.exe.',
+  'Run the installer. If SmartScreen warns, choose More info, then Run anyway. Early builds are unsigned.',
+  'Flowline adds a tray icon and can launch on login. Tracking starts with no account.',
+  'Optional: load the Flowline Bridge extension for per-domain browser time. The installer copies browser-extension next to the app resources.'
+]
+
+const included = [
+  'Automatic foreground-app tracking on Windows 10 and 11',
+  'Dashboard, Insights, Rules, focus sessions, goals, and streaks',
+  'Idle detection so away-from-keyboard time is not counted',
+  'CSV and JSON export of the local database',
+  'Optional Chrome or Edge extension (load unpacked, not a store listing)'
+]
+
+const excluded = [
+  'macOS and Linux builds',
+  'Website or app blocking',
+  'Screen recording or keystroke logging',
+  'Team, employee, or classroom monitoring',
+  'A cloud account or sync'
+]
+---
+
+<Base
+  title="Download for Windows"
+  description="Download the free Flowline installer for Windows 10 and 11, or build the open-source time tracker from source. No account."
+>
+  <div class="mx-auto max-w-3xl px-5 py-14 text-center">
+    <span
+      class="inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-3 py-1 font-mono text-xs text-muted"
+    >
+      <span class="material-symbols-outlined text-sm" aria-hidden="true">desktop_windows</span>
+      Windows 10 and 11 · v{VERSION}
+    </span>
+    <h1 class="mt-6 text-4xl font-bold tracking-tight text-fg">Download Flowline for Windows</h1>
+    <p class="mx-auto mt-3 max-w-xl text-muted">
+      Free automatic time tracker. No account and no cloud upload. Activity is written to a local
+      SQLite file on this PC.
+    </p>
+
+    <div class="mt-9 flex flex-wrap items-center justify-center gap-3">
+      <a
+        href={href('/docs/installation')}
+        class="rounded-xl bg-primary px-6 py-3 font-semibold text-on-primary shadow-glow transition-transform hover:-translate-y-0.5"
+      >
+        Installation guide
+      </a>
+      <a
+        href={SITE.releases}
+        target="_blank"
+        rel="noopener"
+        class="rounded-xl border border-border bg-surface/60 px-6 py-3 font-semibold text-fg hover:border-primary/50"
+      >
+        GitHub Releases
+      </a>
+    </div>
+    <p class="mt-4 font-mono text-xs text-muted">
+      Prebuilt installers are posted on GitHub Releases as they ship. Until one is up, build from
+      source in a few commands — the guide covers both.
+    </p>
+  </div>
+
+  <div class="mx-auto max-w-3xl px-5 pb-16">
+    <div class="rounded-2xl border border-border bg-surface/40 p-7 text-left">
+      <h2 class="text-xl font-semibold text-fg">Install steps</h2>
+      <ol class="mt-4 space-y-3">
+        {
+          steps.map((s, i) => (
+            <li class="flex gap-3 text-fg/90">
+              <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/15 font-mono text-xs text-primary">
+                {i + 1}
+              </span>
+              <span>{s}</span>
+            </li>
+          ))
+        }
+      </ol>
+      <div class="mt-6 flex flex-wrap gap-4 text-sm">
+        <a href={href('/docs/installation')} class="font-semibold text-primary hover:text-primary-strong">
+          Full install guide
+        </a>
+        <a href={href('/docs/browser-extension')} class="font-semibold text-primary hover:text-primary-strong">
+          Browser extension setup
+        </a>
+      </div>
+    </div>
+
+    <div class="mt-6 grid gap-6 sm:grid-cols-2">
+      <div class="rounded-2xl border border-border bg-surface/40 p-7 text-left">
+        <h2 class="text-xl font-semibold text-fg">What you get</h2>
+        <ul class="mt-4 space-y-2 text-sm text-muted">
+          {included.map((item) => <li>{item}</li>)}
+        </ul>
+      </div>
+      <div class="rounded-2xl border border-border bg-surface/40 p-7 text-left">
+        <h2 class="text-xl font-semibold text-fg">What you do not get</h2>
+        <ul class="mt-4 space-y-2 text-sm text-muted">
+          {excluded.map((item) => <li>{item}</li>)}
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-6 rounded-2xl border border-border bg-surface/40 p-7 text-left">
+      <h2 class="text-xl font-semibold text-fg">System requirements</h2>
+      <ul class="mt-4 space-y-2 text-sm text-muted">
+        <li>Windows 10 or Windows 11, 64-bit.</li>
+        <li>A normal desktop or laptop. No extra runtime to install for the packaged app.</li>
+        <li>Chrome or Edge only if you want per-domain browser tracking.</li>
+        <li>Internet is not required after the installer is downloaded.</li>
+      </ul>
+      <p class="mt-4 text-sm text-muted">
+        Installer size is listed on the GitHub release. This page does not guess it.
+      </p>
+    </div>
+
+    <div class="mt-6 rounded-2xl border border-border bg-surface/40 p-7 text-left">
+      <h2 class="text-xl font-semibold text-fg">Build from source</h2>
+      <p class="mt-3 text-muted">
+        Clone the repo and run the Windows setup script. It builds native modules against
+        Electron instead of a plain npm install, which fails on Node 24 here.
+      </p>
+      <pre class="mt-4 overflow-x-auto rounded-xl border border-border bg-bg-soft p-4 text-sm"><code>git clone https://github.com/sanjaynishad/flowline.git
+cd flowline
+npm run setup:win
+npm run dev</code></pre>
+      <a href={href('/docs/installation')} class="mt-4 inline-block text-sm font-semibold text-primary hover:text-primary-strong">
+        Why setup:win is required
+      </a>
+    </div>
+  </div>
+</Base>

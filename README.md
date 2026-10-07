@@ -13,6 +13,8 @@
 
 Flowline is a local-first desktop app that tracks how you spend time across Windows apps and browser tabs, then turns it into a live focus dashboard. It categorizes activity as **productive**, **neutral**, or **distracting**, detects idle time, nudges you when you drift, and includes Pomodoro sessions, daily goals, and streaks. A companion Chrome extension adds accurate per-site tracking. Built with Electron, React, and SQLite — **all your data stays on your device**.
 
+Project site: [sanjaynishad.com/flowline](https://www.sanjaynishad.com/flowline).
+
 ![Flowline dashboard](docs/media/dashboard.png)
 
 ## Contents

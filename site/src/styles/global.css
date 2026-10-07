@@ -1,0 +1,135 @@
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/inter/700.css';
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/500.css';
+@import '@fontsource/jetbrains-mono/600.css';
+@import 'material-symbols/outlined.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: 249 250 247;
+  --bg-soft: 240 243 236;
+  --surface: 255 255 255;
+  --surface-high: 233 238 229;
+  --border: 209 216 205;
+  --fg: 24 28 22;
+  --muted: 92 102 94;
+  --primary: 22 101 52;
+  --primary-strong: 20 83 45;
+  --on-primary: 255 255 255;
+  --secondary: 12 120 180;
+  --danger: 200 60 60;
+}
+
+html.dark {
+  --bg: 10 14 22;
+  --bg-soft: 15 19 28;
+  --surface: 24 28 36;
+  --surface-high: 38 42 51;
+  --border: 49 53 62;
+  --fg: 223 226 238;
+  --muted: 150 160 176;
+  --primary: 0 240 118;
+  --primary-strong: 0 228 112;
+  --on-primary: 0 33 10;
+  --secondary: 123 208 255;
+  --danger: 255 140 140;
+}
+
+html {
+  color-scheme: light;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-bg text-fg font-sans antialiased;
+  background-image:
+    radial-gradient(60rem 60rem at 80% -10%, rgba(0, 240, 118, 0.08), transparent 60%),
+    radial-gradient(50rem 50rem at -10% 10%, rgba(123, 208, 255, 0.06), transparent 55%);
+  background-attachment: fixed;
+}
+
+::selection {
+  background: rgb(var(--primary) / 0.25);
+}
+
+a {
+  @apply transition-colors;
+}
+
+.prose-flow {
+  @apply text-fg/90 leading-relaxed;
+}
+
+.prose-flow h1,
+.prose-flow h2,
+.prose-flow h3 {
+  @apply text-fg font-semibold tracking-tight scroll-mt-24;
+}
+
+.prose-flow h1 {
+  @apply text-3xl mt-2 mb-4;
+}
+
+.prose-flow h2 {
+  @apply text-2xl mt-10 mb-3;
+}
+
+.prose-flow h3 {
+  @apply text-xl mt-8 mb-2;
+}
+
+.prose-flow p {
+  @apply my-4;
+}
+
+.prose-flow ul {
+  @apply my-4 list-disc pl-6 space-y-1.5;
+}
+
+.prose-flow ol {
+  @apply my-4 list-decimal pl-6 space-y-1.5;
+}
+
+.prose-flow a {
+  @apply text-primary hover:text-primary-strong underline underline-offset-4;
+}
+
+.prose-flow code {
+  @apply font-mono text-[0.85em] bg-surface-high/70 px-1.5 py-0.5 rounded border border-border/60;
+}
+
+.prose-flow pre {
+  @apply bg-bg-soft border border-border rounded-xl p-4 my-5 overflow-x-auto text-sm;
+}
+
+.prose-flow pre code {
+  @apply bg-transparent border-0 p-0;
+}
+
+.prose-flow blockquote {
+  @apply border-l-2 border-primary/60 pl-4 my-5 text-muted italic;
+}
+
+.prose-flow table {
+  @apply my-5 w-full text-sm border-collapse;
+}
+
+.prose-flow th,
+.prose-flow td {
+  @apply border border-border px-3 py-2 text-left;
+}

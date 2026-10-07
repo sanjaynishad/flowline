@@ -1,0 +1,57 @@
+---
+import { NAV, SITE, href, navHref } from '../consts'
+import ThemeToggle from './ThemeToggle.astro'
+---
+
+<header class="sticky top-0 z-50 border-b border-border/60 bg-bg/80 backdrop-blur-xl">
+  <div class="mx-auto flex h-16 max-w-content items-center justify-between px-5">
+    <a href={href('/')} class="flex items-center gap-2.5">
+      <span
+        class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/15 text-primary shadow-glow"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="3" fill="currentColor" />
+          <circle cx="12" cy="12" r="7.5" stroke="currentColor" stroke-width="1.5" opacity="0.5" />
+          <circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1" opacity="0.25" />
+        </svg>
+      </span>
+      <span class="flex flex-col leading-none">
+        <span class="text-base font-semibold tracking-tight text-fg">Flowline</span>
+        <span class="font-mono text-[9px] uppercase tracking-[0.2em] text-muted">Focus Tracker</span>
+      </span>
+    </a>
+
+    <nav class="hidden items-center gap-7 md:flex">
+      {
+        NAV.filter((item) => item.href !== '/compare').map((item) => (
+          <a
+            href={navHref(item)}
+            target={item.external ? '_blank' : undefined}
+            rel={item.external ? 'noopener' : undefined}
+            class="text-sm text-muted hover:text-fg"
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <a
+        href={SITE.repo}
+        target="_blank"
+        rel="noopener"
+        class="hidden text-sm text-muted hover:text-fg sm:inline"
+      >
+        GitHub
+      </a>
+      <ThemeToggle />
+      <a
+        href={href('/download')}
+        class="rounded-lg bg-primary px-3.5 py-2 text-sm font-semibold text-on-primary shadow-glow transition-transform hover:-translate-y-0.5"
+      >
+        Download
+      </a>
+    </div>
+  </div>
+</header>
