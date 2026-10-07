@@ -11,8 +11,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Cyber Flow palette ported from the Flowline app. Light is the default;
-   `.dark` on <html> switches to the dark theme (set by the inline theme script). */
 :root {
   --bg: 249 250 247;
   --bg-soft: 240 243 236;

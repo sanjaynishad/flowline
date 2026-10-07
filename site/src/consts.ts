@@ -11,8 +11,6 @@ export const SITE = {
   releases: 'https://github.com/sanjaynishad/flowline/releases',
   issues: 'https://github.com/sanjaynishad/flowline/issues',
   discussions: 'https://github.com/sanjaynishad/flowline/discussions',
-  // GA4 measurement ID (reuses the existing sanjaynishad.com property).
-  // Override at build time with PUBLIC_GA4_ID.
   ga4: import.meta.env.PUBLIC_GA4_ID ?? ''
 } as const
 
@@ -26,8 +24,6 @@ export const NAV = [
   { label: 'Community', href: SITE.discussions, external: true }
 ] as const
 
-// Resolves a NAV item to its final href: external links pass through, in-page
-// anchors and internal paths get the base prefix.
 export function navHref(item: { href: string; external: boolean }): string {
   if (item.external) {
     return item.href
@@ -40,7 +36,6 @@ export function navHref(item: { href: string; external: boolean }): string {
   return href(item.href)
 }
 
-// Prefixes an app-relative path with the configured base ('/flowline').
 export function href(path: string): string {
   const base = import.meta.env.BASE_URL.replace(/\/$/, '')
   if (!path.startsWith('/')) {

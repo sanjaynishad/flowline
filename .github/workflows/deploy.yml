@@ -40,5 +40,4 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir: ${{ secrets.FTP_SERVER_DIR }}
           local-dir: ./site/dist/
-          # Encrypt credentials and payload in transit; HestiaCP supports explicit FTPS on 21.
           protocol: ftps

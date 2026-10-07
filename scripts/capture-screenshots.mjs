@@ -1,11 +1,5 @@
-// Captures marketing screenshots of the Flowline renderer running in a plain
-// browser (via vite.demo.config.ts with a mocked window.api). Produces crisp
-// dark + light PNGs for each page into site/public/screenshots/.
-//
-// Usage:
-//   1) npx vite --config vite.demo.config.ts     (serves http://localhost:5178)
-//   2) node scripts/capture-screenshots.mjs
-// Requires: npx playwright install chromium
+// Captures dark + light screenshots of each renderer page into site/public/screenshots/.
+// Run the demo server first (npm run demo); needs a browser: npx playwright install chromium (or PW_CHANNEL=chrome).
 import { chromium } from 'playwright'
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
@@ -36,8 +30,6 @@ async function setTheme(page, theme) {
 async function run() {
   await mkdir(outDir, { recursive: true })
 
-  // Prefer Playwright's bundled Chromium; fall back to a system Chrome/Edge
-  // install (set PW_CHANNEL=chrome|msedge) when the download is unavailable.
   const channel = process.env.PW_CHANNEL
   const browser = await chromium.launch(channel ? { channel } : {})
   const context = await browser.newContext({

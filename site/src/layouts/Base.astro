@@ -26,8 +26,7 @@ const graph = [websiteJsonLd(), ...(jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [
 <html lang="en">
   <head>
     <script is:inline>
-      // Apply the theme before paint to avoid a flash. Defaults to the OS
-      // setting ("system") until the visitor explicitly picks one.
+      // Set the theme before paint to avoid a flash.
       ;(function () {
         try {
           const stored = localStorage.getItem('theme')

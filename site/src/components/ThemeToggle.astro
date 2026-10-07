@@ -28,7 +28,6 @@
       } catch (e) {}
     })
 
-    // Follow OS changes only while the visitor hasn't picked a theme.
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
       let stored = null
       try {

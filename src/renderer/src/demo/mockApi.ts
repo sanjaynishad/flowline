@@ -1,6 +1,5 @@
-// Mock implementation of the Electron `window.api` bridge for the browser-based
-// demo build. Lets the real renderer run outside Electron with believable data
-// for marketing screenshots — it never talks to the main process or SQLite.
+// Mock of the Electron `window.api` bridge for the browser demo build, so the real
+// renderer runs outside Electron with demo data — it never touches the main process or SQLite.
 import type {
   ActivityEvent,
   AppUsage,
