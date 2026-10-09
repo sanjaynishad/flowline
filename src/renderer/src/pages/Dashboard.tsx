@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type { DashboardSummary, RangePreset, ActivityEvent } from '@shared/types'
 import { rangeFromPreset } from '@shared/range'
 import { useRangeQuery } from '../hooks/useRangeQuery'
@@ -17,7 +17,9 @@ export function Dashboard({
   onRangeChange: (r: RangePreset) => void
 }): JSX.Element {
   const status = useLiveStatus()
-  const { data } = useRangeQuery<DashboardSummary>(range, (r) => window.api.getDashboard(r))
+  const { data, refresh } = useRangeQuery<DashboardSummary>(range, (r) =>
+    window.api.getDashboard(r)
+  )
   const [events, setEvents] = useState<ActivityEvent[]>([])
   const [liveSession, setLiveSession] = useState(status.activeSessionSec)
   const [distractionLimitMin, setDistractionLimitMin] = useState<number | null>(null)
@@ -26,17 +28,16 @@ export function Dashboard({
     window.api.getSettings().then((s) => setDistractionLimitMin(s.distractionLimitMin))
   }, [])
 
-  useEffect(() => {
-    const load = (): void => {
-      // Rebuild the range each poll so the stream follows the current day past midnight.
-      const r = rangeFromPreset(range)
-      window.api.getRecentEvents(r, 12).then(setEvents)
-    }
-
-    load()
-    const id = setInterval(load, 5000)
-    return () => clearInterval(id)
+  // Rebuild the range on each load so the stream follows the current day past midnight.
+  const loadEvents = useCallback((): void => {
+    window.api.getRecentEvents(rangeFromPreset(range), 12).then(setEvents)
   }, [range])
+
+  useEffect(() => {
+    loadEvents()
+    const id = setInterval(loadEvents, 5000)
+    return () => clearInterval(id)
+  }, [loadEvents])
 
   useEffect(() => {
     setLiveSession(status.activeSessionSec)
@@ -84,7 +85,13 @@ export function Dashboard({
         <TopApplicationsCard apps={data?.topApps ?? []} />
       </div>
 
-      <ActivityStreamCard events={events} />
+      <ActivityStreamCard
+        events={events}
+        onRuleAdded={() => {
+          refresh()
+          loadEvents()
+        }}
+      />
     </>
   )
 }

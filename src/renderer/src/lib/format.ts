@@ -66,3 +66,14 @@ export const categoryTextClass: Record<Category, string> = {
 export function formatTime(ts: number): string {
   return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
+
+export function exeMatcher(exePath: string | null, appName: string): string {
+  if (exePath) {
+    const base = exePath.split(/[\\/]/).pop()
+    if (base) {
+      return base
+    }
+  }
+
+  return appName
+}

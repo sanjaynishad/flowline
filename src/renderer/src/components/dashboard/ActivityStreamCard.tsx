@@ -1,9 +1,16 @@
 import type { ActivityEvent } from '@shared/types'
 import { Card } from '../Card'
 import { Icon } from '../Icon'
+import { AddRuleMenu } from './AddRuleMenu'
 import { formatDuration, formatTime } from '../../lib/format'
 
-export function ActivityStreamCard({ events }: { events: ActivityEvent[] }): JSX.Element {
+export function ActivityStreamCard({
+  events,
+  onRuleAdded
+}: {
+  events: ActivityEvent[]
+  onRuleAdded?: () => void
+}): JSX.Element {
   return (
     <Card className="p-6 space-y-4">
       <div className="flex items-center gap-2">
@@ -12,7 +19,7 @@ export function ActivityStreamCard({ events }: { events: ActivityEvent[] }): JSX
       </div>
       <div className="divide-y divide-surface-variant/20">
         {events.map((e) => (
-          <div key={e.id} className="flex items-center justify-between py-2.5">
+          <div key={e.id} className="group flex items-center justify-between py-2.5">
             <div className="flex items-center gap-3 min-w-0">
               <span
                 className={`w-2 h-2 rounded-full flex-shrink-0 ${
@@ -33,6 +40,9 @@ export function ActivityStreamCard({ events }: { events: ActivityEvent[] }): JSX
               </div>
             </div>
             <div className="flex items-center gap-3 flex-shrink-0">
+              <div className="opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+                <AddRuleMenu event={e} onAdded={onRuleAdded} />
+              </div>
               <span className="font-label-caps text-label-caps text-on-surface-variant">
                 {formatDuration(e.durationSec)}
               </span>

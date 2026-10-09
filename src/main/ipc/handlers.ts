@@ -54,7 +54,7 @@ export function registerIpcHandlers(deps: HandlerDeps): void {
 
   ipcMain.handle(
     IPC.rulesAdd,
-    (
+    async (
       _e,
       input: {
         matcher: string
@@ -66,7 +66,7 @@ export function registerIpcHandlers(deps: HandlerDeps): void {
       const rule = addRule(input)
       if (rule) {
         tracker.reloadRules()
-        scheduleRecategorize()
+        await scheduleRecategorize()
       }
 
       return rule
@@ -87,7 +87,7 @@ export function registerIpcHandlers(deps: HandlerDeps): void {
     ) => {
       updateRule(id, patch)
       tracker.reloadRules()
-      scheduleRecategorize()
+      void scheduleRecategorize()
       return getRules()
     }
   )
@@ -95,7 +95,7 @@ export function registerIpcHandlers(deps: HandlerDeps): void {
   ipcMain.handle(IPC.rulesDelete, (_e, id: number) => {
     deleteRule(id)
     tracker.reloadRules()
-    scheduleRecategorize()
+    void scheduleRecategorize()
     return getRules()
   })
 

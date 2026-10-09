@@ -207,16 +207,17 @@ export async function recategorizeAllEvents(): Promise<number> {
 
 let recategorizeRunning = false
 let recategorizePending = false
+let recategorizeDone: Promise<void> = Promise.resolve()
 
 // Coalesces bursts of rule edits into a single background pass so full scans don't stack up.
-export function scheduleRecategorize(): void {
+export function scheduleRecategorize(): Promise<void> {
   if (recategorizeRunning) {
     recategorizePending = true
-    return
+    return recategorizeDone
   }
 
   recategorizeRunning = true
-  void (async () => {
+  recategorizeDone = (async () => {
     try {
       do {
         recategorizePending = false
@@ -228,6 +229,8 @@ export function scheduleRecategorize(): void {
       recategorizeRunning = false
     }
   })()
+
+  return recategorizeDone
 }
 
 // ---------- Aggregates ----------
