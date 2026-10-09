@@ -66,7 +66,6 @@ export function registerIpcHandlers(deps: HandlerDeps): void {
       const rule = addRule(input)
       if (rule) {
         tracker.reloadRules()
-        // Await so the renderer's post-add refresh reads recategorized events, not stale ones.
         await scheduleRecategorize()
       }
 

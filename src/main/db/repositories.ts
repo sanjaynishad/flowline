@@ -210,7 +210,6 @@ let recategorizePending = false
 let recategorizeDone: Promise<void> = Promise.resolve()
 
 // Coalesces bursts of rule edits into a single background pass so full scans don't stack up.
-// Returns a promise that settles when the in-flight (and any pending) pass completes.
 export function scheduleRecategorize(): Promise<void> {
   if (recategorizeRunning) {
     recategorizePending = true

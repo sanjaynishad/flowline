@@ -130,7 +130,6 @@ class Tracker {
         domain: null
       })
     ) {
-      // The lock screen isn't user activity, so end any distraction streak like the AFK path does.
       this.distractedSinceMs = null
       this.distractionNotified = false
       return

@@ -67,7 +67,6 @@ export function formatTime(ts: number): string {
   return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
-// The categorizer matches exe rules on the executable filename (e.g. "Code.exe").
 export function exeMatcher(exePath: string | null, appName: string): string {
   if (exePath) {
     const base = exePath.split(/[\\/]/).pop()
