@@ -55,7 +55,8 @@
     "postinstall": "electron-builder install-app-deps",
     "setup:win": "npm install --ignore-scripts && node node_modules/electron/install.js && electron-rebuild -f",
     "pack:win": "electron-vite build && electron-builder --win --dir",
-    "dist:win": "electron-vite build && electron-builder --win"
+    "dist:win": "electron-vite build && electron-builder --win",
+    "release:win": "electron-vite build && electron-builder --win --publish always"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.1",

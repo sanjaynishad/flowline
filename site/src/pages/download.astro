@@ -3,6 +3,11 @@ import Base from '../layouts/Base.astro'
 import { SITE, href } from '../consts'
 import { VERSION } from '../seo'
 
+const releaseBase = `${SITE.repo}/releases/download/v${VERSION}`
+const setupUrl = `${releaseBase}/Flowline-${VERSION}-setup.exe`
+const portableUrl = `${releaseBase}/Flowline-${VERSION}-portable.exe`
+const zipUrl = `${releaseBase}/Flowline-${VERSION}-win.zip`
+
 const steps = [
   'Download the latest Flowline setup .exe from GitHub Releases. The file name looks like Flowline-0.1.0-setup.exe.',
   'Run the installer. If SmartScreen warns, choose More info, then Run anyway. Early builds are unsigned.',
@@ -46,23 +51,28 @@ const excluded = [
 
     <div class="mt-9 flex flex-wrap items-center justify-center gap-3">
       <a
-        href={href('/docs/installation')}
+        href={setupUrl}
         class="rounded-xl bg-primary px-6 py-3 font-semibold text-on-primary shadow-glow transition-transform hover:-translate-y-0.5"
+      >
+        Download installer · v{VERSION}
+      </a>
+      <a
+        href={href('/docs/installation')}
+        class="rounded-xl border border-border bg-surface/60 px-6 py-3 font-semibold text-fg hover:border-primary/50"
       >
         Installation guide
       </a>
-      <a
-        href={SITE.releases}
-        target="_blank"
-        rel="noopener"
-        class="rounded-xl border border-border bg-surface/60 px-6 py-3 font-semibold text-fg hover:border-primary/50"
-      >
-        GitHub Releases
+    </div>
+    <div class="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 font-mono text-xs text-muted">
+      <a href={portableUrl} class="hover:text-primary">Portable .exe</a>
+      <a href={zipUrl} class="hover:text-primary">Zip archive</a>
+      <a href={SITE.releases} target="_blank" rel="noopener" class="hover:text-primary">
+        All releases
       </a>
     </div>
     <p class="mt-4 font-mono text-xs text-muted">
-      Prebuilt installers are posted on GitHub Releases as they ship. Until one is up, build from
-      source in a few commands — the guide covers both.
+      Prebuilt installers are posted on GitHub Releases. Prefer to build it yourself? The guide
+      below covers building from source in a few commands.
     </p>
   </div>
 
