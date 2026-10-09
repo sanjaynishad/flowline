@@ -2,7 +2,7 @@ import { powerMonitor } from 'electron'
 import { ActiveWindow } from '@paymoapp/active-window'
 import type { Category, LiveStatus, Rule } from '../../shared/types'
 import { getRules, insertEvent, updateEventEnd, deleteEmptyEvent } from '../db/repositories'
-import { classify, isBrowser, type Candidate } from './categorizer'
+import { classify, isBrowser, isIgnoredWindow, type Candidate } from './categorizer'
 import { browserBridge } from '../browser/wsServer'
 
 interface WinInfo {
@@ -122,6 +122,17 @@ class Tracker {
   }
 
   private openSpan(winInfo: WinInfo): void {
+    if (
+      isIgnoredWindow({
+        appName: winInfo.application || 'Unknown',
+        exePath: winInfo.path || null,
+        windowTitle: null,
+        domain: null
+      })
+    ) {
+      return
+    }
+
     const candidate = this.buildCandidate(winInfo)
     const url = candidate.domain ? (browserBridge.getFreshTab()?.url ?? null) : null
     this.beginSpan(candidate, url)

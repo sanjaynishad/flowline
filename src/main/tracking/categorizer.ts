@@ -88,3 +88,10 @@ const KNOWN_BROWSERS = new Set([
 export function isBrowser(candidate: Candidate): boolean {
   return KNOWN_BROWSERS.has(exeName(candidate))
 }
+
+// System shells that take foreground but aren't real user activity (e.g. the lock screen).
+const IGNORED_EXES = new Set(['lockapp.exe', 'logonui.exe'])
+
+export function isIgnoredWindow(candidate: Candidate): boolean {
+  return IGNORED_EXES.has(exeName(candidate))
+}
