@@ -1,0 +1,44 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and publish Windows installers
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      # Native better-sqlite3 must be built against Electron, not Node. A plain
+      # npm install fails here (Node 24 ClangCL), so install without scripts, fetch
+      # the Electron binary, then rebuild native modules for Electron.
+      - name: Install dependencies
+        run: npm install --ignore-scripts --no-audit --no-fund
+        env:
+          npm_config_fetch_retries: '5'
+          npm_config_fetch_retry_mintimeout: '20000'
+          npm_config_fetch_retry_maxtimeout: '120000'
+
+      - name: Install Electron binary
+        run: node node_modules/electron/install.js
+
+      - name: Rebuild native modules for Electron
+        run: npx electron-rebuild -f
+
+      - name: Build and publish release
+        run: npm run release:win
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

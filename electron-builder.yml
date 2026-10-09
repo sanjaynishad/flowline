@@ -1,5 +1,7 @@
 appId: com.flowline.app
 productName: Flowline
+extraMetadata:
+  description: Flowline
 directories:
   buildResources: build
   output: dist
@@ -25,8 +27,14 @@ win:
     - target: nsis
       arch:
         - x64
+    - target: portable
+      arch:
+        - x64
+    - target: zip
+      arch:
+        - x64
   icon: build/icon.png
-  artifactName: ${productName}-${version}-setup.${ext}
+artifactName: ${productName}-${version}-win.${ext}
 nsis:
   oneClick: false
   perMachine: false
@@ -34,3 +42,11 @@ nsis:
   createDesktopShortcut: true
   createStartMenuShortcut: true
   shortcutName: Flowline
+  artifactName: ${productName}-${version}-setup.${ext}
+portable:
+  artifactName: ${productName}-${version}-portable.${ext}
+publish:
+  provider: github
+  owner: sanjaynishad
+  repo: flowline
+  releaseType: draft
