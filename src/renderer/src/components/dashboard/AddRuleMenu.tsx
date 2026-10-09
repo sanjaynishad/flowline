@@ -68,7 +68,10 @@ export function AddRuleMenu({
       {open && (
         <div className="absolute right-0 top-7 z-10 min-w-[180px] rounded-lg border border-surface-variant/30 bg-surface-container-high shadow-lg p-1">
           {feedback ? (
-            <div className="px-3 py-2 font-body-sm text-body-sm text-on-surface-variant">
+            <div
+              role="status"
+              className="px-3 py-2 font-body-sm text-body-sm text-on-surface-variant"
+            >
               {feedback}
             </div>
           ) : (
